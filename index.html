@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>איתמר כהן | תיק עבודות</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #fdfdfd;
+            --text-main: #1a1a1a;
+            --text-secondary: #555;
+            --border-color: #eee;
+            --transition-smooth: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            --font-scale: 1;
+        }
+
+        /* מצבי נגישות global */
+        body.acc-high-contrast {
+            --bg-color: #000000 !important;
+            --text-main: #ffff00 !important;
+            --text-secondary: #ffffff !important;
+            --border-color: #ffff00 !important;
+        }
+
+        body.acc-grayscale {
+            filter: grayscale(100%);
+        }
+
+        body.acc-underline-links a {
+            text-decoration: underline !important;
+        }
+
+        body.acc-readable-font {
+            font-family: Arial, sans-serif !important;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        html { 
+            scroll-behavior: smooth; 
+            font-size: calc(16px * var(--font-scale));
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Assistant', sans-serif;
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, .section-title, .specialization { font-weight: 600; }
+        .logo, .tool-badge { font-family: 'Montserrat', sans-serif; }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(253, 253, 253, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        body.acc-high-contrast nav {
+            background: #000000 !important;
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 1.25rem;
+            line-height: 1;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            line-height: 1;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .nav-links a:hover, .nav-links a:focus { opacity: 1; outline: 2px solid var(--text-main); }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 26px;
+            height: 26px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1200;
+        }
+        .menu-toggle span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--text-main);
+            transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+        .menu-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .menu-toggle.open span:nth-child(2) { opacity: 0; }
+        .menu-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            z-index: 1100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-12px);
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+        }
+        .mobile-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .mobile-menu a, .mobile-menu button {
+            text-decoration: none;
+            color: var(--text-main);
+            font-family: 'Assistant', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 500;
+            opacity: 0.8;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .mobile-menu a:hover, .mobile-menu button:hover { opacity: 1; }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 20px;
+            left: 6%;
+            width: 26px;
+            height: 26px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mobile-menu-close::before, .mobile-menu-close::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 1.5px;
+            background: var(--text-main);
+        }
+        .mobile-menu-close::before { transform: rotate(45deg); }
+        .mobile-menu-close::after { transform: rotate(-45deg); }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: var(--transition-smooth);
+            will-change: transform, opacity;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        section.hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+        }
+
+        .specialization {
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-weight: 500;
+            display: block;
+        }
+
+        h1 {
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            line-height: 1.25;
+            font-weight: 600;
+            max-width: 1100px;
+            margin-bottom: 40px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.3;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* Marquee */
+        .marquee-wrapper {
+            width: 100%;
+            max-width: 720px;
+            overflow-x: auto;
+            position: relative;
+            margin-top: 10px;
+            mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+            cursor: grab;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            user-select: none;
+        }
+
+        .marquee-wrapper::-webkit-scrollbar { display: none; }
+        .marquee-wrapper:active { cursor: grabbing; }
+
+        .marquee {
+            width: max-content;
+            display: flex;
+            white-space: nowrap;
+            padding: 16px 0;
+        }
+
+        .marquee-content {
+            display: inline-flex;
+            align-items: center;
+            animation: marquee-scroll 28s linear infinite;
+        }
+
+        .marquee-wrapper:hover .marquee-content { animation-play-state: paused; }
+
+        .logo-wrapper {
+            width: 80px;
+            height: 70px;
+            margin: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tool-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--accent, var(--text-main));
+            background: color-mix(in srgb, var(--accent, #999) 5%, transparent);
+            opacity: 0.6;
+            transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .logo-wrapper:hover .tool-badge {
+            opacity: 1;
+            transform: translateY(-2px);
+            border-color: color-mix(in srgb, var(--accent, #999) 35%, var(--border-color));
+        }
+
+        @keyframes marquee-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(50%); }
+        }
+
+        /* Layout Sections */
+        section { padding: 140px 10%; }
+
+        #about { padding-top: 80px; padding-bottom: 80px; }
+        .about-text {
+            font-weight: 400;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        /* Work Grid & Items */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        .work-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 1px solid var(--border-color);
+            background-color: #0d0d0d;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .work-item:hover, .work-item:focus { 
+            border-color: #bbbbbb;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .work-preview-video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .work-item:hover .work-preview-video {
+            transform: scale(1.03);
+        }
+
+        /* Icon Overlay */
+        .play-overlay-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.15);
+            opacity: 0.85;
+            transition: opacity 0.3s ease, background 0.3s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .work-item:hover .play-overlay-icon {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .play-icon-svg {
+            width: 48px;
+            height: 48px;
+            fill: white;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+            transition: transform 0.3s ease;
+        }
+
+        .work-item:hover .play-icon-svg {
+            transform: scale(1.1);
+        }
+
+        /* Text Overlay on Thumbnail */
+        .work-item-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            padding: 35px 20px 16px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+            color: #ffffff;
+            z-index: 3;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            transition: opacity 0.3s ease;
+        }
+
+        .work-item-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .work-item-sub {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* General Modal Overlay Base */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            padding: 4%;
+        }
+
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Video Modal Specific */
+        .modal-content-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            background: #000;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal.open .modal-content-wrapper {
+            transform: scale(1);
+        }
+
+        .modal-video {
+            width: 100%;
+            max-height: 80vh;
+            display: block;
+            outline: none;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
+        .modal-close-btn::before, .modal-close-btn::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 1.5px;
+            background: #fff;
+        }
+
+        .modal-close-btn::before { transform: rotate(45deg); }
+        .modal-close-btn::after { transform: rotate(-45deg); }
+
+        /* Accessibility Modal Popup */
+        .acc-modal-card {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            max-height: 85vh;
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal.open .acc-modal-card {
+            transform: translateY(0);
+        }
+
+        .acc-modal-card .modal-close-btn {
+            top: 24px;
+            left: 24px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .acc-modal-card .modal-close-btn::before, 
+        .acc-modal-card .modal-close-btn::after {
+            background: var(--text-main);
+        }
+
+        .acc-modal-card .modal-close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .acc-modal-content {
+            text-align: right;
+            color: var(--text-secondary);
+        }
+
+        .acc-modal-content h2 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .acc-modal-content h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin: 24px 0 10px;
+        }
+
+        .acc-modal-content ul {
+            padding-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        .acc-modal-content ul li {
+            margin-bottom: 6px;
+        }
+
+        .acc-modal-content a {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Accessibility Floating Widget */
+        .acc-widget-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .acc-widget-btn:hover, .acc-widget-btn:focus {
+            transform: scale(1.1);
+        }
+
+        .acc-widget-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+        }
+
+        .acc-menu {
+            position: fixed;
+            bottom: 85px;
+            right: 24px;
+            width: 280px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 1500;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .acc-menu.open {
+            display: flex;
+        }
+
+        .acc-menu-header {
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .acc-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+
+        .acc-btn:hover, .acc-btn:focus {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.acc-high-contrast .acc-btn:hover {
+            background: #333 !important;
+        }
+
+        .acc-btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .acc-btn-group .acc-btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Contact Form */
+        .contact-form { max-width: 600px; margin: 60px auto 0; text-align: right; }
+        .form-group { margin-bottom: 36px; }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            opacity: 0.6;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Assistant', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 400;
+            transition: border-color 0.35s ease;
+            resize: none;
+        }
+
+        input:focus, textarea:focus { border-bottom-color: var(--text-main); }
+
+        button[type="submit"] {
+            margin-top: 30px;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        button[type="submit"]:hover { opacity: 0.85; transform: translateY(-2px); }
+
+        footer {
+            padding: 80px 10% 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .footer-link-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, text-decoration 0.2s ease;
+            padding: 4px 8px;
+        }
+
+        .footer-link-btn:hover, .footer-link-btn:focus {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .work-grid { grid-template-columns: 1fr; gap: 24px; }
+            section { padding: 90px 6%; }
+            #about { padding-top: 50px; padding-bottom: 50px; }
+            .contact-form { margin-top: 40px; }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                padding: 0 6%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 64px;
+            }
+
+            .logo { 
+                font-size: 1rem; 
+                line-height: 1;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                height: 26px;
+            }
+
+            .nav-links { display: none; }
+            
+            .menu-toggle { 
+                display: flex;
+                width: 26px;
+                height: 26px;
+                margin: 0;
+                padding: 0;
+                justify-content: center;
+                align-items: center;
+            }
+
+            section.hero { padding: 100px 6% 30px; min-height: auto; }
+            .specialization { font-size: 0.85rem; margin-bottom: 14px; letter-spacing: 0.03em; }
+            
+            h1 { font-size: 1.75rem; line-height: 1.35; margin-bottom: 24px; font-weight: 600; }
+            .section-title { font-size: 1.6rem; margin-bottom: 18px; }
+
+            .marquee-wrapper { max-width: 100%; }
+            .logo-wrapper { width: 64px; height: 56px; margin: 0 6px; }
+            .tool-badge { width: 40px; height: 40px; font-size: 0.78rem; border-radius: 9px; }
+
+            section { padding: 60px 6%; }
+            
+            #about { padding-top: 40px; padding-bottom: 40px; }
+            .about-text { font-size: 1.05rem; line-height: 1.75; }
+
+            .work-item-title { font-size: 0.98rem; }
+            .work-item-sub { font-size: 0.78rem; }
+            .work-item-overlay { padding: 25px 14px 12px; }
+
+            .contact-form { max-width: 100%; }
+            .form-group { margin-bottom: 24px; }
+            label { font-size: 0.8rem; margin-bottom: 8px; }
+            input, textarea { font-size: 1rem; padding: 10px 0; }
+            button[type="submit"] { width: 100%; padding: 15px; font-size: 0.9rem; margin-top: 15px; }
+
+            footer { padding: 40px 6% 30px; font-size: 0.8rem; }
+
+            .modal-close-btn { top: 12px; left: 12px; width: 36px; height: 36px; }
+
+            .acc-modal-card { padding: 25px 20px; }
+            .acc-modal-card .modal-close-btn { top: 16px; left: 16px; }
+
+            .acc-widget-btn { bottom: 16px; right: 16px; width: 44px; height: 44px; }
+            .acc-menu { bottom: 70px; right: 16px; width: calc(100vw - 32px); }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
+            .marquee-content { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav aria-label="ניווט ראשי">
+        <div class="nav-links">
+            <a href="#home">בית</a>
+            <a href="#about">נעים להכיר</a>
+            <a href="#work">תיק עבודות</a>
+            <a href="#contact">יצירת קשר</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="תפריט" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="#" class="logo">Itamar Cohen</a>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu" aria-label="תפריט נייד">
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="סגור תפריט"></button>
+        <a href="#home">בית</a>
+        <a href="#about">נעים להכיר</a>
+        <a href="#work">תיק עבודות</a>
+        <a href="#contact">יצירת קשר</a>
+        <button class="footer-link-btn" class="openAccModalBtn">הצהרת נגישות</button>
+    </div>
+
+    <main id="main-content">
+        <section class="hero" id="home">
+            <span class="specialization reveal">עריכת וידאו · עיצוב גרפי · רשתות חברתיות · כתיבת תוכן</span>
+            <h1 class="reveal">איתמר כהן | תיק עבודות</h1>
+
+            <div class="marquee-wrapper reveal" id="marqueeWrapper">
+                <div class="marquee">
+                    <div class="marquee-content" id="marquee-inner">
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#9999FF" title="Premiere Pro">Pr</div></div>
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#CF96FF" title="After Effects">Ae</div></div>
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#31A8FF" title="Photoshop">Ps</div></div>
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#FF9A00" title="Illustrator">Ai</div></div>
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#31C5F0" title="Lightroom">Lr</div></div>
+                        <div class="logo-wrapper"><div class="tool-badge" style="--accent:#E8262C" title="DaVinci Resolve">Dr</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2 class="section-title reveal">נעים להכיר</h2>
+            <p class="about-text reveal">
+                שמי איתמר, מעצב, עורך וידאו וכותב תוכן עבור כוכבי רשת ועסקים ברשתות השונות ובמגוון תחומים.
+                נושם את התחום מרגע תכנון הרעיון הנכון ועד התוצר הטוב והמדויק ביותר עבור קהל היעד.
+            </p>
+        </section>
+
+        <section id="work" class="work-grid" aria-label="תיק עבודות">
+
+            <!-- כרטיסייה 1 -->
+            <div class="work-item reveal" tabindex="0" role="button" aria-label="פתיחת וידאו עריכת וידאו רשתות חברתיות" data-video="Videos/Comp-Ex1.mp4" data-poster-time="0.5">
+                <video class="work-preview-video" muted loop playsinline preload="metadata">
+                    <source src="Videos/Comp-Ex1.mp4" type="video/mp4">
+                </video>
+                <div class="play-overlay-icon">
+                    <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="work-item-overlay">
+                    <div class="work-item-title">עריכת וידאו - רשתות חברתיות</div>
+                    <div class="work-item-sub">קונימבו - אתרי איקומרס</div>
+                </div>
+            </div>
+
+            <!-- כרטיסייה 2 -->
+            <div class="work-item reveal" tabindex="0" role="button" aria-label="פתיחת וידאו עריכת וידאו פרוייקט מסחרי" data-video="Videos/Comp-Ex1.mp4" data-poster-time="1.0">
+                <video class="work-preview-video" muted loop playsinline preload="metadata">
+                    <source src="" type="video/mp4">
+                </video>
+                <div class="play-overlay-icon">
+                    <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="work-item-overlay">
+                    <div class="work-item-title">עריכת וידאו - פרוייקט מסחרי</div>
+                    <div class="work-item-sub">אפקטים קולנועיים ומושן</div>
+                </div>
+            </div>
+
+            <!-- כרטיסייה 3 -->
+            <div class="work-item reveal" tabindex="0" role="button" aria-label="פתיחת וידאו עיצוב בתנועה" data-video="Videos/Comp-Ex2.mp4" data-poster-time="0.8">
+                <video class="work-preview-video" muted loop playsinline preload="metadata">
+                    <source src="" type="video/mp4">
+                </video>
+                <div class="play-overlay-icon">
+                    <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="work-item-overlay">
+                    <div class="work-item-title">עיצוב בתנועה (Motion Graphics)</div>
+                    <div class="work-item-sub">After Effects & Premiere</div>
+                </div>
+            </div>
+
+            <!-- כרטיסייה 4 -->
+            <div class="work-item reveal" tabindex="0" role="button" aria-label="פתיחת וידאו סרטון תדמית לעסקים" data-video="Videos/Comp-Ex2.mp4" data-poster-time="1.5">
+                <video class="work-preview-video" muted loop playsinline preload="metadata">
+                    <source src="" type="video/mp4">
+                </video>
+                <div class="play-overlay-icon">
+                    <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="work-item-overlay">
+                    <div class="work-item-title">סרטון תדמית לעסקים</div>
+                    <div class="work-item-sub">הפקה ועריכה מלאה</div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="contact" style="text-align: center;">
+            <h2 class="section-title reveal">יצירת קשר</h2>
+
+            <div class="contact-form reveal">
+                <form action="https://formsubmit.co/itamarcohen2050@gmail.com" method="POST">
+                    <input type="hidden" name="_subject" value="הודעה חדשה מהאתר">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_captcha" value="false">
+                    <div class="form-group">
+                        <label for="fullName">שם מלא</label>
+                        <input type="text" id="fullName" name="שם מלא" placeholder="לדוגמה: איתמר כהן" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailAddr">כתובת אימייל</label>
+                        <input type="email" id="emailAddr" name="אימייל" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNum">טלפון</label>
+                        <input type="tel" id="phoneNum" name="טלפון" placeholder="+972 -- --- ----" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userMsg">הודעה</label>
+                        <textarea id="userMsg" name="הודעה" rows="4" placeholder="כמה מילים על מה שתרצו לספר לי..."></textarea>
+                    </div>
+                    <button type="submit">שליחה</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal נגן וידאו -->
+    <div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-label="נגן וידאו">
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="סגור נגן"></button>
+        <div class="modal-content-wrapper">
+            <video class="modal-video" id="modalVideoPlayer" controls playsinline></video>
+        </div>
+    </div>
+
+    <!-- Modal הצהרת נגישות -->
+    <div class="modal" id="accStatementModal" role="dialog" aria-modal="true" aria-label="הצהרת נגישות">
+        <div class="acc-modal-card">
+            <button class="modal-close-btn" id="accModalCloseBtn" aria-label="סגור הצהרת נגישות"></button>
+            <div class="acc-modal-content">
+                <h2>הצהרת נגישות</h2>
+                <p>
+                    אני רואה חשיבות עליונה במתן שירות שוויוני, מכבד ונגיש לכלל המשתמשים, לרבות אנשים עם מוגבלויות.
+                    אתר זה הונגש בהתאם לתקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013, ולפי תקן <strong>WCAG 2.1 ברמה AA</strong>.
+                </p>
+
+                <h3>התאמות הנגישות שבוצעו באתר:</h3>
+                <ul>
+                    <li>ניווט מלא באמצעות המקלדת (מקש Tab, Enter, Escape).</li>
+                    <li>מבנה היררכי ברור של כותרות וטקסטים.</li>
+                    <li>תמיכה בסרגלי נגישות ייעודיים להגדלת טקסט, שינוי ניגודיות והדגשת קישורים.</li>
+                    <li>התאמה למכשירים ניידים ולרזולוציות מסך שונות.</li>
+                    <li>מתן תיאור אלטרנטיבי (Alt / Aria-Label) לרכיבים ויזואליים ואינטראקטיביים.</li>
+                </ul>
+
+                <h3>סרגל נגישות (תוסף)</h3>
+                <p>
+                    בצד התחתון של המסך מופיע כפתור נגישות צף. בלחיצה עליו ייפתח תפריט המאפשר לכם להתאים את תצוגת האתר לנוחותכם (שינוי גודל פונט, מצב ניגודיות גבוהה, גווני אפור ועוד).
+                </p>
+
+                <h3>פרטי רכז/ת הנגישות ופניות בנושא:</h3>
+                <p>
+                    אם נתקלתם בקושי לגלוש באתר או שיש לכם הצעה לשיפור הנגישות, אשמח לשמוע ולטפל בכך בהקדם:
+                </p>
+                <ul>
+                    <li><strong>שם:</strong> איתמר כהן</li>
+                    <li><strong>אימייל:</strong> <a href="mailto:itamarcohen2050@gmail.com">itamarcohen2050@gmail.com</a></li>
+                </ul>
+                <p style="margin-top: 15px;"><small>תאריך עדכון הצהרת הנגישות: אוגוסט 2026</small></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- תוסף נגישות צף -->
+    <button class="acc-widget-btn" id="accWidgetBtn" aria-label="פתח תפריט נגישות" aria-expanded="false">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
+        </svg>
+    </button>
+
+    <div class="acc-menu" id="accMenu" aria-label="תפריט סרגל נגישות">
+        <div class="acc-menu-header">
+            <span>תפריט נגישות</span>
+            <button id="accCloseBtn" style="background:none; border:none; cursor:pointer; font-weight:bold; font-size:1.1rem; color:inherit;">✕</button>
+        </div>
+        <div class="acc-btn-group">
+            <button class="acc-btn" id="btnFontIncrease" title="הגדל גופן">א+</button>
+            <button class="acc-btn" id="btnFontDecrease" title="הקטן גופן">א-</button>
+        </div>
+        <button class="acc-btn" id="btnToggleContrast">
+            <span>ניגודיות גבוהה</span>
+            <span id="contrastStatus">✖</span>
+        </button>
+        <button class="acc-btn" id="btnToggleGrayscale">
+            <span>גווני אפור</span>
+            <span id="grayscaleStatus">✖</span>
+        </button>
+        <button class="acc-btn" id="btnToggleLinks">
+            <span>הדגשת קישורים</span>
+            <span id="linksStatus">✖</span>
+        </button>
+        <button class="acc-btn" id="btnToggleReadableFont">
+            <span>גופן קריא</span>
+            <span id="fontStatus">✖</span>
+        </button>
+        <button class="acc-btn" id="btnResetAcc" style="margin-top: 6px; border-color: #d9534f; color: #d9534f; justify-content: center;">
+            איפוס הגדרות נגישות
+        </button>
+    </div>
+
+    <footer>
+        <div>© 2026 איתמר כהן · תיק עבודות</div>
+        <div><button class="footer-link-btn" id="openAccModalBtn">הצהרת נגישות</button></div>
+    </footer>
+
+    <script>
+        // הכפלת רשימת הכללים לאפקט Marquee רציף
+        const marqueeInner = document.getElementById('marquee-inner');
+        if (marqueeInner) {
+            marqueeInner.innerHTML += marqueeInner.innerHTML;
+        }
+
+        // גלילה ידנית בגרירה
+        const wrapper = document.getElementById('marqueeWrapper');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        wrapper.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - wrapper.offsetLeft;
+            scrollLeft = wrapper.scrollLeft;
+        });
+
+        wrapper.addEventListener('mouseleave', () => { isDown = false; });
+        wrapper.addEventListener('mouseup', () => { isDown = false; });
+
+        wrapper.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - wrapper.offsetLeft;
+            const walk = (x - startX) * 2;
+            wrapper.scrollLeft = scrollLeft - walk;
+        });
+
+        // ניהול תפריט מובייל
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+        const closeMenu = () => {
+            menuToggle.classList.remove('open');
+            mobileMenu.classList.remove('open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+        };
+
+        menuToggle.addEventListener('click', () => {
+            const isOpen = menuToggle.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+            menuToggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        mobileMenuClose.addEventListener('click', closeMenu);
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Modal נגן וידאו
+        const videoModal = document.getElementById('videoModal');
+        const modalVideoPlayer = document.getElementById('modalVideoPlayer');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        const closeVideoModal = () => {
+            videoModal.classList.remove('open');
+            modalVideoPlayer.pause();
+            modalVideoPlayer.src = '';
+            document.body.style.overflow = '';
+        };
+
+        modalCloseBtn.addEventListener('click', closeVideoModal);
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) closeVideoModal();
+        });
+
+        // Modal הצהרת נגישות
+        const accStatementModal = document.getElementById('accStatementModal');
+        const openAccModalBtns = document.querySelectorAll('#openAccModalBtn, .openAccModalBtn');
+        const accModalCloseBtn = document.getElementById('accModalCloseBtn');
+
+        const openAccModal = () => {
+            accStatementModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            closeMenu();
+        };
+
+        const closeAccModal = () => {
+            accStatementModal.classList.remove('open');
+            document.body.style.overflow = '';
+        };
+
+        openAccModalBtns.forEach(btn => btn.addEventListener('click', openAccModal));
+        accModalCloseBtn.addEventListener('click', closeAccModal);
+        accStatementModal.addEventListener('click', (e) => {
+            if (e.target === accStatementModal) closeAccModal();
+        });
+
+        // גלובלי - סגירת מודאלים ב-Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (videoModal.classList.contains('open')) closeVideoModal();
+                if (accStatementModal.classList.contains('open')) closeAccModal();
+            }
+        });
+
+        // פונקציה לייצור Thumbnail מתוך פריים בתוך הוידאו
+        function generateVideoThumbnail(videoElement, timeInSeconds = 0.5) {
+            const tempVideo = document.createElement('video');
+            const source = videoElement.querySelector('source');
+            if (!source || !source.src) return;
+
+            tempVideo.src = source.src;
+            tempVideo.crossOrigin = 'anonymous';
+            tempVideo.muted = true;
+            tempVideo.currentTime = timeInSeconds;
+
+            tempVideo.addEventListener('seeked', () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tempVideo.videoWidth || 1280;
+                    canvas.height = tempVideo.videoHeight || 720;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                    
+                    const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    videoElement.poster = thumbnailUrl;
+                } catch (e) {
+                    console.warn('לא ניתן לחלץ פריים מסיבות אבטחה או היעדר קובץ מקומי זמין', e);
+                }
+            });
+        }
+
+        // טעינת פריים, אירועי Hover, מקלדת ופתיחת Modal לכל כרטיסייה
+        const workItems = document.querySelectorAll('.work-item');
+
+        workItems.forEach(item => {
+            const previewVideo = item.querySelector('.work-preview-video');
+            const captureTime = parseFloat(item.getAttribute('data-poster-time')) || 0.5;
+
+            if (previewVideo) {
+                generateVideoThumbnail(previewVideo, captureTime);
+
+                item.addEventListener('mouseenter', () => {
+                    previewVideo.play().catch(() => {});
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    previewVideo.pause();
+                    previewVideo.currentTime = 0;
+                });
+            }
+
+            const openVideoModal = () => {
+                const videoSrc = item.getAttribute('data-video');
+                if (videoSrc) {
+                    modalVideoPlayer.src = videoSrc;
+                    videoModal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                    modalVideoPlayer.play();
+                }
+            };
+
+            item.addEventListener('click', openVideoModal);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openVideoModal();
+                }
+            });
+        });
+
+        // Reveal Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                } else {
+                    entry.target.classList.remove('active');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+
+        document.querySelectorAll('section:not(.hero) .reveal, .contact-form.reveal').forEach(el => observer.observe(el));
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+                    setTimeout(() => el.classList.add('active'), i * 180);
+                });
+            }, 100);
+        });
+
+        /* --- לוגיקת תוסף הנגישות --- */
+        const accWidgetBtn = document.getElementById('accWidgetBtn');
+        const accMenu = document.getElementById('accMenu');
+        const accCloseBtn = document.getElementById('accCloseBtn');
+
+        let fontScale = parseFloat(localStorage.getItem('acc_fontScale')) || 1;
+        let isContrast = localStorage.getItem('acc_contrast') === 'true';
+        let isGrayscale = localStorage.getItem('acc_grayscale') === 'true';
+        let isLinks = localStorage.getItem('acc_links') === 'true';
+        let isReadableFont = localStorage.getItem('acc_font') === 'true';
+
+        function updateAccUI() {
+            document.documentElement.style.setProperty('--font-scale', fontScale);
+            document.body.classList.toggle('acc-high-contrast', isContrast);
+            document.body.classList.toggle('acc-grayscale', isGrayscale);
+            document.body.classList.toggle('acc-underline-links', isLinks);
+            document.body.classList.toggle('acc-readable-font', isReadableFont);
+
+            document.getElementById('contrastStatus').textContent = isContrast ? '✓' : '✖';
+            document.getElementById('grayscaleStatus').textContent = isGrayscale ? '✓' : '✖';
+            document.getElementById('linksStatus').textContent = isLinks ? '✓' : '✖';
+            document.getElementById('fontStatus').textContent = isReadableFont ? '✓' : '✖';
+
+            localStorage.setItem('acc_fontScale', fontScale);
+            localStorage.setItem('acc_contrast', isContrast);
+            localStorage.setItem('acc_grayscale', isGrayscale);
+            localStorage.setItem('acc_links', isLinks);
+            localStorage.setItem('acc_font', isReadableFont);
+        }
+
+        accWidgetBtn.addEventListener('click', () => {
+            const open = accMenu.classList.toggle('open');
+            accWidgetBtn.setAttribute('aria-expanded', open);
+        });
+
+        accCloseBtn.addEventListener('click', () => {
+            accMenu.classList.remove('open');
+            accWidgetBtn.setAttribute('aria-expanded', 'false');
+        });
+
+        document.getElementById('btnFontIncrease').addEventListener('click', () => {
+            if (fontScale < 1.4) { fontScale += 0.1; updateAccUI(); }
+        });
+
+        document.getElementById('btnFontDecrease').addEventListener('click', () => {
+            if (fontScale > 0.8) { fontScale -= 0.1; updateAccUI(); }
+        });
+
+        document.getElementById('btnToggleContrast').addEventListener('click', () => {
+            isContrast = !isContrast;
+            updateAccUI();
+        });
+
+        document.getElementById('btnToggleGrayscale').addEventListener('click', () => {
+            isGrayscale = !isGrayscale;
+            updateAccUI();
+        });
+
+        document.getElementById('btnToggleLinks').addEventListener('click', () => {
+            isLinks = !isLinks;
+            updateAccUI();
+        });
+
+        document.getElementById('btnToggleReadableFont').addEventListener('click', () => {
+            isReadableFont = !isReadableFont;
+            updateAccUI();
+        });
+
+        document.getElementById('btnResetAcc').addEventListener('click', () => {
+            fontScale = 1;
+            isContrast = false;
+            isGrayscale = false;
+            isLinks = false;
+            isReadableFont = false;
+            updateAccUI();
+        });
+
+        // טעינת הגדרות נגישות שמורות
+        updateAccUI();
+    </script>
+</body>
+</html>
