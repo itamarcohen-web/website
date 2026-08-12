@@ -9,6 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
 
     <style>
+        /* טעינת פונט RAG-Sans והחלת הטווח המוגבל לאנגלית בלבד */
+        @font-face {
+            font-family: 'RAG Sans 65';
+            src: url('RAG-Sans-65-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+            /* הטווח שמגדיר אותיות באנגלית (Basic Latin & Latin-1 Supplement) */
+            unicode-range: U+0000-007F, U+0080-00FF;
+        }
+
         :root {
             --bg-color: #fdfdfd;
             --text-main: #1a1a1a;
@@ -47,14 +58,15 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Assistant', sans-serif;
+            /* 'RAG Sans 65' מופיע ראשון: תווים באנגלית ייקחו אותו, ועברית תמשיך ל-Assistant */
+            font-family: 'RAG Sans 65', 'Assistant', sans-serif;
             line-height: 1.8;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3, .section-title, .specialization { font-weight: 600; }
-        .logo, .tool-badge { font-family: 'Montserrat', sans-serif; }
+        .logo, .tool-badge { font-family: 'RAG Sans 65', 'Montserrat', sans-serif; }
 
         /* Navigation */
         nav {
@@ -144,7 +156,7 @@
         .mobile-menu a, .mobile-menu button {
             text-decoration: none;
             color: var(--text-main);
-            font-family: 'Assistant', sans-serif;
+            font-family: 'RAG Sans 65', 'Assistant', sans-serif;
             font-size: 1.35rem;
             font-weight: 500;
             opacity: 0.8;
@@ -277,7 +289,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'RAG Sans 65', 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.95rem;
             color: var(--accent, var(--text-main));
@@ -670,7 +682,7 @@
             background: transparent;
             border: none;
             border-bottom: 1px solid var(--border-color);
-            font-family: 'Assistant', sans-serif;
+            font-family: 'RAG Sans 65', 'Assistant', sans-serif;
             font-size: 1.05rem;
             font-weight: 400;
             transition: border-color 0.35s ease;
@@ -894,284 +906,8 @@
                 <div class="play-overlay-icon">
                     <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <div class="work-item-overlay">
-                    <div class="work-item-title">סגיר לפרסומת "מילקי אקסטרה קצפת"</div>
-                    <div class="work-item-sub">מילקי | שטראוס</div>
-                </div>
-            </div>
-
-            <!-- כרטיסייה 4 -->
-            <div class="work-item reveal" tabindex="0" role="button" aria-label="פתיחת וידאו סרטון תדמית לעסקים" data-video="https://www.image2url.com/r2/default/videos/1786402533161-25682b53-179f-44de-afca-95507b905929.mp4" data-poster-time="1.5">
-                <video class="work-preview-video" muted loop playsinline preload="metadata">
-                    <source src="https://www.image2url.com/r2/default/videos/1786402533161-25682b53-179f-44de-afca-95507b905929.mp4" type="video/mp4">
-                </video>
-                <div class="play-overlay-icon">
-                    <svg class="play-icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-                <div class="work-item-overlay">
-                    <div class="work-item-title">וידאו עסקי לרשתות החברתיות</div>
-                    <div class="work-item-sub">קונימבו</div>
-                </div>
-            </div>
-
-        </section>
-
-        <section id="contact" style="text-align: center;">
-            <h2 class="section-title reveal">יצירת קשר</h2>
-
-            <div class="contact-form reveal">
-                <form action="https://formsubmit.co/itamarcohen2050@gmail.com" method="POST">
-                    <input type="hidden" name="_subject" value="הודעה חדשה מהאתר">
-                    <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_captcha" value="false">
-                    <div class="form-group">
-                        <label for="fullName">שם מלא</label>
-                        <input type="text" id="fullName" name="שם מלא" placeholder="לדוגמה: איתמר כהן" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="emailAddr">כתובת אימייל</label>
-                        <input type="email" id="emailAddr" name="אימייל" placeholder="email@example.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNum">טלפון</label>
-                        <input type="tel" id="phoneNum" name="טלפון" placeholder="+972 -- --- ----" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userMsg">הודעה</label>
-                        <textarea id="userMsg" name="הודעה" rows="4" placeholder="כמה מילים על מה שתרצו לספר לי..."></textarea>
-                    </div>
-                    <button type="submit">שליחת הודעה</button>
-                </form>
             </div>
         </section>
     </main>
-
-    <footer>
-        <p>© 2026 איתמר כהן | כל הזכויות שמורות</p>
-        <button class="footer-link-btn openAccModalBtn">הצהרת נגישות</button>
-    </footer>
-
-    <!-- Video Modal -->
-    <div class="modal" id="videoModal" aria-hidden="true" role="dialog" aria-label="נגן וידאו">
-        <div class="modal-content-wrapper">
-            <button class="modal-close-btn" id="videoModalClose" aria-label="סגור וידאו"></button>
-            <video class="modal-video" id="modalVideoPlayer" controls playsinline></video>
-        </div>
-    </div>
-
-    <!-- Accessibility Modal -->
-    <div class="modal" id="accModal" aria-hidden="true" role="dialog" aria-label="הצהרת נגישות">
-        <div class="acc-modal-card">
-            <button class="modal-close-btn" id="accModalClose" aria-label="סגור הצהרת נגישות"></button>
-            <div class="acc-modal-content">
-                <h2>הצהרת נגישות</h2>
-                <p>אני רואה חשיבות עליונה במתן שירות שוויוני ונגיש לכלל הגולשים, כולל אנשים עם מוגבלויות.</p>
-                
-                <h3>התאמות הנגישות באתר</h3>
-                <ul>
-                    <li>תמיכה מלאה בניווט מקלדת.</li>
-                    <li>התאמה למקוראי מסך ומבנה נתונים תקני.</li>
-                    <li>אפשרות לשינוי גודל גופן, ניגודיות ומצב גווני אפור.</li>
-                    <li>התאמה מלאה למגוון מסכים ומכשירים ניידים.</li>
-                </ul>
-
-                <h3>פניות בנושא נגישות</h3>
-                <p>אם נתקלתם בבעיה או שיש לכם הצעה לשיפור, מוזמנים ליצור איתי קשר בכתובת המייל: <a href="mailto:itamarcohen2050@gmail.com">itamarcohen2050@gmail.com</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Accessibility Widget Button & Menu -->
-    <button class="acc-widget-btn" id="accWidgetBtn" aria-label="תפריט נגישות">
-        <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-    </button>
-
-    <div class="acc-menu" id="accMenu" aria-label="תפריט נגישות מורחב">
-        <div class="acc-menu-header">
-            <span>נגישות</span>
-            <button id="accResetBtn" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8rem;">איפוס</button>
-        </div>
-        <div class="acc-btn-group">
-            <button class="acc-btn" id="accIncText">גופן +</button>
-            <button class="acc-btn" id="accDecText">גופן -</button>
-        </div>
-        <button class="acc-btn" id="accToggleContrast"><span>ניגודיות גבוהה</span></button>
-        <button class="acc-btn" id="accToggleGrayscale"><span>גווני אפור</span></button>
-        <button class="acc-btn" id="accToggleLinks"><span>הדגשת קישורים</span></button>
-        <button class="acc-btn" id="accToggleFont"><span>פונט קריא</span></button>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            /* Mobile Menu Toggle */
-            const menuToggle = document.getElementById('menuToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuClose = document.getElementById('mobileMenuClose');
-
-            const toggleMobileMenu = (open) => {
-                mobileMenu.classList.toggle('open', open);
-                menuToggle.classList.toggle('open', open);
-                menuToggle.setAttribute('aria-expanded', open);
-                document.body.style.overflow = open ? 'hidden' : '';
-            };
-
-            menuToggle?.addEventListener('click', () => toggleMobileMenu(!mobileMenu.classList.contains('open')));
-            mobileMenuClose?.addEventListener('click', () => toggleMobileMenu(false));
-
-            mobileMenu?.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => toggleMobileMenu(false));
-            });
-
-            /* Scroll Reveal Logic */
-            const revealElements = document.querySelectorAll('.reveal');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            revealElements.forEach(el => observer.observe(el));
-
-            /* Marquee Duplication for Continuous Loop */
-            const marqueeInner = document.getElementById('marquee-inner');
-            if (marqueeInner) {
-                marqueeInner.innerHTML += marqueeInner.innerHTML;
-            }
-
-            /* Video Items - Hover & Modal Logic */
-            const videoModal = document.getElementById('videoModal');
-            const modalVideoPlayer = document.getElementById('modalVideoPlayer');
-            const videoModalClose = document.getElementById('videoModalClose');
-
-            document.querySelectorAll('.work-item').forEach(item => {
-                const video = item.querySelector('.work-preview-video');
-                const videoSrc = item.getAttribute('data-video');
-                const posterTime = item.getAttribute('data-poster-time') || 0.5;
-
-                if (video) {
-                    video.currentTime = parseFloat(posterTime);
-
-                    item.addEventListener('mouseenter', () => {
-                        video.play().catch(() => {});
-                    });
-
-                    item.addEventListener('mouseleave', () => {
-                        video.pause();
-                        video.currentTime = parseFloat(posterTime);
-                    });
-                }
-
-                const openVideo = () => {
-                    if (videoSrc) {
-                        modalVideoPlayer.src = videoSrc;
-                        videoModal.classList.add('open');
-                        videoModal.setAttribute('aria-hidden', 'false');
-                        modalVideoPlayer.play();
-                    }
-                };
-
-                item.addEventListener('click', openVideo);
-                item.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        openVideo();
-                    }
-                });
-            });
-
-            const closeVideoModal = () => {
-                videoModal.classList.remove('open');
-                videoModal.setAttribute('aria-hidden', 'true');
-                modalVideoPlayer.pause();
-                modalVideoPlayer.src = '';
-            };
-
-            videoModalClose?.addEventListener('click', closeVideoModal);
-            videoModal?.addEventListener('click', (e) => {
-                if (e.target === videoModal) closeVideoModal();
-            });
-
-            /* Accessibility Modal Logic */
-            const accModal = document.getElementById('accModal');
-            const accModalClose = document.getElementById('accModalClose');
-            const openAccBtns = document.querySelectorAll('.openAccModalBtn');
-
-            openAccBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    toggleMobileMenu(false);
-                    accModal.classList.add('open');
-                    accModal.setAttribute('aria-hidden', 'false');
-                });
-            });
-
-            const closeAccModal = () => {
-                accModal.classList.remove('open');
-                accModal.setAttribute('aria-hidden', 'true');
-            };
-
-            accModalClose?.addEventListener('click', closeAccModal);
-            accModal?.addEventListener('click', (e) => {
-                if (e.target === accModal) closeAccModal();
-            });
-
-            /* Accessibility Widget Logic */
-            const accWidgetBtn = document.getElementById('accWidgetBtn');
-            const accMenu = document.getElementById('accMenu');
-            let fontScale = 1;
-
-            accWidgetBtn?.addEventListener('click', () => {
-                accMenu.classList.toggle('open');
-            });
-
-            document.getElementById('accIncText')?.addEventListener('click', () => {
-                if (fontScale < 1.3) {
-                    fontScale += 0.1;
-                    document.documentElement.style.setProperty('--font-scale', fontScale);
-                }
-            });
-
-            document.getElementById('accDecText')?.addEventListener('click', () => {
-                if (fontScale > 0.8) {
-                    fontScale -= 0.1;
-                    document.documentElement.style.setProperty('--font-scale', fontScale);
-                }
-            });
-
-            document.getElementById('accToggleContrast')?.addEventListener('click', () => {
-                document.body.classList.toggle('acc-high-contrast');
-            });
-
-            document.getElementById('accToggleGrayscale')?.addEventListener('click', () => {
-                document.body.classList.toggle('acc-grayscale');
-            });
-
-            document.getElementById('accToggleLinks')?.addEventListener('click', () => {
-                document.body.classList.toggle('acc-underline-links');
-            });
-
-            document.getElementById('accToggleFont')?.addEventListener('click', () => {
-                document.body.classList.toggle('acc-readable-font');
-            });
-
-            document.getElementById('accResetBtn')?.addEventListener('click', () => {
-                fontScale = 1;
-                document.documentElement.style.setProperty('--font-scale', 1);
-                document.body.classList.remove('acc-high-contrast', 'acc-grayscale', 'acc-underline-links', 'acc-readable-font');
-            });
-
-            /* Close Modals and Menus on Escape */
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeVideoModal();
-                    closeAccModal();
-                    accMenu.classList.remove('open');
-                    toggleMobileMenu(false);
-                }
-            });
-        });
-    </script>
 </body>
 </html>
