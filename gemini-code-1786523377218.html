@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itamar Cohen | Video Editor & Designer</title>
+    
+    <!-- Google Fonts - Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RAG Sans custom font for Hebrew */
+        @font-face {
+            font-family: 'RAG Sans';
+            src: url('RAG-Sans-65-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+            unicode-range: U+0590-05FF, U+FB1D-FB4F;
+        }
+
+        :root {
+            --bg-color: #fdfdfd;
+            --text-main: #1a1a1a;
+            --text-secondary: #555;
+            --border-color: #eee;
+            --accent-color: #0066cc;
+            --transition-smooth: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            --font-scale: 1;
+        }
+
+        /* Global accessibility modes */
+        body.acc-high-contrast {
+            --bg-color: #000000 !important;
+            --text-main: #ffff00 !important;
+            --text-secondary: #ffffff !important;
+            --border-color: #ffff00 !important;
+            --accent-color: #ffff00 !important;
+        }
+
+        body.acc-grayscale {
+            filter: grayscale(100%);
+        }
+
+        body.acc-underline-links a {
+            text-decoration: underline !important;
+        }
+
+        body.acc-readable-font {
+            font-family: Arial, sans-serif !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: calc(16px * var(--font-scale));
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            /* English from Montserrat, Hebrew fallback to RAG Sans */
+            font-family: 'Montserrat', 'RAG Sans', sans-serif;
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Swapped elements position via standard row direction */
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-main);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--bg-color);
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 3rem;
+            background: var(--bg-color);
+        }
+
+        /* Portfolio Grid */
+        .portfolio-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 5rem;
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: #000;
+            aspect-ratio: 16 / 9;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.02);
+        }
+
+        .portfolio-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .portfolio-item-info {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            color: #fff;
+        }
+
+        .portfolio-item-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .portfolio-item-client {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.75);
+        }
+
+        /* Play Icon */
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            transition: opacity 0.3s ease, background 0.3s ease;
+            pointer-events: none;
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+
+        .portfolio-item:hover .play-button {
+            opacity: 1;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .play-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+            margin-left: 3px;
+        }
+
+        /* Video Modal Fix */
+        .video-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .video-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-content video {
+            width: 100%;
+            max-height: 80vh;
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .contact-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-item label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .contact-item a {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        footer a.accessibility-link {
+            color: var(--text-secondary);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        footer a.accessibility-link:hover {
+            color: var(--text-main);
+        }
+
+        /* Accessibility Floating Widget */
+        .acc-widget-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .acc-widget-btn:hover, .acc-widget-btn:focus {
+            transform: scale(1.1);
+        }
+
+        .acc-widget-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+        }
+
+        .acc-menu {
+            position: fixed;
+            bottom: 85px;
+            right: 24px;
+            width: 280px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 1500;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .acc-menu.open {
+            display: flex;
+        }
+
+        .acc-menu-header {
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .acc-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+
+        .acc-btn:hover, .acc-btn:focus {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.acc-high-contrast .acc-btn:hover {
+            background: #333 !important;
+        }
+
+        .acc-btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .acc-btn-group .acc-btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Accessibility Modal */
+        .acc-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            padding: 4%;
+        }
+
+        .acc-modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .acc-modal-card {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            max-height: 85vh;
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .acc-modal-overlay.open .acc-modal-card {
+            transform: translateY(0);
+        }
+
+        .acc-modal-card .modal-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .acc-modal-card .modal-close-btn::before, 
+        .acc-modal-card .modal-close-btn::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 1.5px;
+            background: var(--text-main);
+        }
+
+        .acc-modal-card .modal-close-btn::before { transform: rotate(45deg); }
+        .acc-modal-card .modal-close-btn::after { transform: rotate(-45deg); }
+
+        .acc-modal-card .modal-close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .acc-modal-content {
+            text-align: left;
+            color: var(--text-secondary);
+        }
+
+        .acc-modal-content h2 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .acc-modal-content h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin: 24px 0 10px;
+        }
+
+        .acc-modal-content ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .acc-modal-content ul li {
+            margin-bottom: 6px;
+        }
+
+        .acc-modal-content a {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+
+        /* Mobile Adaptations */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 2rem 1.5rem;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .contact-section {
+                padding: 2rem 1rem;
+            }
+
+            .contact-info {
+                gap: 1.5rem;
+                flex-direction: column;
+            }
+
+            .acc-widget-btn { 
+                bottom: 16px; 
+                right: 16px; 
+                width: 44px; 
+                height: 44px; 
+            }
+
+            .acc-menu { 
+                bottom: 70px; 
+                right: 16px; 
+                width: calc(100vw - 32px); 
+            }
+
+            .acc-modal-card {
+                padding: 24px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo">Itamar Cohen</div>
+        <nav>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <h1>Itamar Cohen</h1>
+    <p>Video Editing • Motion Design • 3D • Social Media Content</p>
+</section>
+
+<main>
+    <section class="portfolio-section" id="portfolio">
+        <h2>Portfolio</h2>
+        <div class="portfolio-grid">
+            <div class="portfolio-item" data-video="https://www.image2url.com/r2/default/videos/1786402040046-b4273323-fc19-46ca-b643-2ef3e443e762.mp4">
+                <video muted playsinline preload="metadata">
+                    <source src="https://www.image2url.com/r2/default/videos/1786402040046-b4273323-fc19-46ca-b643-2ef3e443e762.mp4" type="video/mp4">
+                </video>
+                <div class="play-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="portfolio-item-info">
+                    <div class="portfolio-item-title">Opening for "The Mechanism"</div>
+                    <div class="portfolio-item-client">Channel 11 | Shaul Amsterdamski</div>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-video="https://www.image2url.com/r2/default/videos/1786402167230-09144007-de27-4736-892c-051f094c701d.mp4">
+                <video muted playsinline preload="metadata">
+                    <source src="https://www.image2url.com/r2/default/videos/1786402167230-09144007-de27-4736-892c-051f094c701d.mp4" type="video/mp4">
+                </video>
+                <div class="play-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="portfolio-item-info">
+                    <div class="portfolio-item-title">Channel 13 Transition Ad</div>
+                    <div class="portfolio-item-client">Channel 13 | Promo Department</div>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-video="https://www.image2url.com/r2/default/videos/1786402379587-2f8ed9ef-b4d3-4fa0-a900-1d610e92dfc7.mp4">
+                <video muted playsinline preload="metadata">
+                    <source src="https://www.image2url.com/r2/default/videos/1786402379587-2f8ed9ef-b4d3-4fa0-a900-1d610e92dfc7.mp4" type="video/mp4">
+                </video>
+                <div class="play-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="portfolio-item-info">
+                    <div class="portfolio-item-title">Milky Extra Cream Closer</div>
+                    <div class="portfolio-item-client">Milky | Strauss</div>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-video="https://www.image2url.com/r2/default/videos/1786402533161-25682b53-179f-44de-afca-95507b905929.mp4">
+                <video muted playsinline preload="metadata">
+                    <source src="https://www.image2url.com/r2/default/videos/1786402533161-25682b53-179f-44de-afca-95507b905929.mp4" type="video/mp4">
+                </video>
+                <div class="play-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="portfolio-item-info">
+                    <div class="portfolio-item-title">Business Video for Social Media</div>
+                    <div class="portfolio-item-client">Konimbo</div>
+                </div>
+            </div>
+
+                        <div class="portfolio-item" data-video="https://www.image2url.com/r2/default/videos/1786523715754-428b3002-03fb-4e74-8c4c-b674196ae906.mp4">
+                <video muted playsinline preload="metadata">
+                    <source src="https://www.image2url.com/r2/default/videos/1786523715754-428b3002-03fb-4e74-8c4c-b674196ae906.mp4" type="video/mp4">
+                </video>
+                <div class="play-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="portfolio-item-info">
+                    <div class="portfolio-item-title">SOS Brand | Ad</div>
+                    <div class="portfolio-item-client">Dr Fischer</div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <h2>Contact</h2>
+        <div class="contact-info">
+            <div class="contact-item">
+                <label>Email</label>
+                <a href="mailto:itamarcohen2050@gmail.com">itamarcohen2050@gmail.com</a>
+            </div>
+            <div class="contact-item">
+                <label>Phone</label>
+                <a href="tel:+972-50-1234567">054-7704459</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 Itamar Cohen | All Rights Reserved</p>
+    <a class="accessibility-link openAccModalBtn">Accessibility Statement</a>
+</footer>
+
+<!-- Video Modal -->
+<div class="video-modal-overlay" id="videoModal">
+    <div class="modal-content">
+        <button class="modal-close" id="videoModalClose">×</button>
+        <video id="modalVideo" controls playsinline></video>
+    </div>
+</div>
+
+<!-- Accessibility Widget Button & Menu -->
+<button class="acc-widget-btn" id="accWidgetBtn" aria-label="Accessibility menu">
+    <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+</button>
+
+<div class="acc-menu" id="accMenu" aria-label="Extended accessibility menu">
+    <div class="acc-menu-header">
+        <span>Accessibility</span>
+        <button id="accResetBtn" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.8rem;">Reset</button>
+    </div>
+    <div class="acc-btn-group">
+        <button class="acc-btn" id="accIncText">Font +</button>
+        <button class="acc-btn" id="accDecText">Font -</button>
+    </div>
+    <button class="acc-btn" id="accToggleContrast"><span>High Contrast</span></button>
+    <button class="acc-btn" id="accToggleGrayscale"><span>Grayscale</span></button>
+    <button class="acc-btn" id="accToggleLinks"><span>Underline Links</span></button>
+    <button class="acc-btn" id="accToggleFont"><span>Readable Font</span></button>
+</div>
+
+<!-- Accessibility Modal -->
+<div class="acc-modal-overlay" id="accModal" aria-hidden="true" role="dialog" aria-label="Accessibility Statement">
+    <div class="acc-modal-card">
+        <button class="modal-close-btn" id="accModalClose" aria-label="Close accessibility statement"></button>
+        <div class="acc-modal-content">
+            <h2>Accessibility Statement</h2>
+            <p>I believe in providing equal and accessible service to all visitors, including people with disabilities.</p>
+            
+            <h3>Accessibility Features on This Website</h3>
+            <ul>
+                <li>Full support for keyboard navigation.</li>
+                <li>Compatibility with screen readers and semantic HTML structure.</li>
+                <li>Options to adjust font size, contrast, and grayscale mode.</li>
+                <li>Full compatibility with various screen sizes and mobile devices.</li>
+            </ul>
+
+            <h3>Accessibility Issues or Suggestions</h3>
+            <p>If you encounter any issues or have suggestions for improvement, please contact me at: <a href="mailto:itamarcohen2050@gmail.com">itamarcohen2050@gmail.com</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        /* Video Modal Logic Fix */
+        const videoModal = document.getElementById('videoModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const videoModalClose = document.getElementById('videoModalClose');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        portfolioItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const videoSrc = item.getAttribute('data-video');
+                modalVideo.src = videoSrc;
+                videoModal.classList.add('active');
+                modalVideo.play().catch(() => {});
+            });
+        });
+
+        function closeVideoModal() {
+            videoModal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.src = '';
+        }
+
+        videoModalClose?.addEventListener('click', closeVideoModal);
+        videoModal?.addEventListener('click', (e) => {
+            if (e.target === videoModal) closeVideoModal();
+        });
+
+        /* Accessibility Widget Logic */
+        const accWidgetBtn = document.getElementById('accWidgetBtn');
+        const accMenu = document.getElementById('accMenu');
+        const accModal = document.getElementById('accModal');
+        const accModalClose = document.getElementById('accModalClose');
+        const openAccBtns = document.querySelectorAll('.openAccModalBtn');
+        let fontScale = 1;
+
+        accWidgetBtn?.addEventListener('click', () => {
+            accMenu.classList.toggle('open');
+        });
+
+        document.getElementById('accIncText')?.addEventListener('click', () => {
+            if (fontScale < 1.3) {
+                fontScale += 0.1;
+                document.documentElement.style.setProperty('--font-scale', fontScale);
+            }
+        });
+
+        document.getElementById('accDecText')?.addEventListener('click', () => {
+            if (fontScale > 0.8) {
+                fontScale -= 0.1;
+                document.documentElement.style.setProperty('--font-scale', fontScale);
+            }
+        });
+
+        document.getElementById('accToggleContrast')?.addEventListener('click', () => {
+            document.body.classList.toggle('acc-high-contrast');
+        });
+
+        document.getElementById('accToggleGrayscale')?.addEventListener('click', () => {
+            document.body.classList.toggle('acc-grayscale');
+        });
+
+        document.getElementById('accToggleLinks')?.addEventListener('click', () => {
+            document.body.classList.toggle('acc-underline-links');
+        });
+
+        document.getElementById('accToggleFont')?.addEventListener('click', () => {
+            document.body.classList.toggle('acc-readable-font');
+        });
+
+        document.getElementById('accResetBtn')?.addEventListener('click', () => {
+            fontScale = 1;
+            document.documentElement.style.setProperty('--font-scale', 1);
+            document.body.classList.remove('acc-high-contrast', 'acc-grayscale', 'acc-underline-links', 'acc-readable-font');
+        });
+
+        /* Accessibility Modal Logic */
+        openAccBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                accMenu.classList.remove('open');
+                accModal.classList.add('open');
+                accModal.setAttribute('aria-hidden', 'false');
+            });
+        });
+
+        const closeAccModal = () => {
+            accModal.classList.remove('open');
+            accModal.setAttribute('aria-hidden', 'true');
+        };
+
+        accModalClose?.addEventListener('click', closeAccModal);
+        accModal?.addEventListener('click', (e) => {
+            if (e.target === accModal) closeAccModal();
+        });
+
+        /* Global Close on Escape Key */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+                closeAccModal();
+                accMenu.classList.remove('open');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
