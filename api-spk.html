@@ -1,0 +1,944 @@
+
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API מול SDK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&family=Assistant:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @font-face{
+    font-family:'Anomalia';
+    src:url('https://raw.githubusercontent.com/itamarcohen-web/website/main/anomalia-regular-aaa.ttf') format('truetype');
+    font-weight:300 500; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:'Anomalia';
+    src:url('https://raw.githubusercontent.com/itamarcohen-web/website/main/anomalia-bold-aaa.ttf') format('truetype');
+    font-weight:600 900; font-style:normal; font-display:swap;
+  }
+
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#f3f7fc;
+    --surface:#ffffff;
+    --surface-2:#eef4fb;
+    --ink:#0c1a4c;
+    --ink-soft:#4a5578;
+    --muted:#7c88ab;
+    --line:#dbe6f3;
+    --navy:#132168;
+    --blue:#155fd1;
+    --blue-strong:#0d49aa;
+    --cyan:#1596c4;
+    --cyan-soft:#e2f2f8;
+    --api:#7c5bb0;
+    --api-soft:#f1ecf9;
+    --sdk:#5c6a92;
+    --sdk-soft:#eef1f7;
+    --good:#178a5a;
+    --good-soft:#e4f5ec;
+    --bad:#c8433c;
+    --bad-soft:#fbeae9;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:8px;
+    --shadow-sm:0 8px 20px -16px rgba(15,40,110,.28);
+    --badge:72px;
+    --pad-t:74px;
+    --pad-b:60px;
+    --console-h:180px;
+    --font-display:'Anomalia','Rubik',system-ui,sans-serif;
+    --font-body:'Anomalia','Assistant',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0a0f24; --surface:#111c3f; --surface-2:#0d1733; --ink:#e9f0ff; --ink-soft:#b3c0e6; --muted:#8592bf;
+      --line:#22315e; --navy:#a9c6ff; --blue:#5b9dff; --blue-strong:#8ebbff; --cyan:#5cc9e8; --cyan-soft:#0f2733;
+      --api:#b79ce0; --api-soft:#241d38; --sdk:#a4b0d6; --sdk-soft:#161f3e; --good:#3ee096; --good-soft:#0e2a20;
+      --bad:#ff7a72; --bad-soft:#341413; --shadow-sm:0 10px 26px -18px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a0f24; --surface:#111c3f; --surface-2:#0d1733; --ink:#e9f0ff; --ink-soft:#b3c0e6; --muted:#8592bf;
+    --line:#22315e; --navy:#a9c6ff; --blue:#5b9dff; --blue-strong:#8ebbff; --cyan:#5cc9e8; --cyan-soft:#0f2733;
+    --api:#b79ce0; --api-soft:#241d38; --sdk:#a4b0d6; --sdk-soft:#161f3e; --good:#3ee096; --good-soft:#0e2a20;
+    --bad:#ff7a72; --bad-soft:#341413; --shadow-sm:0 10px 26px -18px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{ background:var(--bg); color:var(--ink); font-family:var(--font-body); }
+  #app{ direction:rtl; }
+  h1,h2,h3{ font-family:var(--font-display); text-wrap:balance; margin:0; color:var(--ink); font-weight:800; }
+  p{ margin:0; }
+  button{ font-family:inherit; cursor:pointer; }
+  code, .ltr, .en{ direction:ltr; unicode-bidi:isolate; font-family:var(--font-mono); }
+  .hero-logo .a, .hero-logo .s, .hero-logo .vs, .brand span, .sdk-outer-label, .compare-card h3{ font-family:var(--font-mono); }
+
+  .icon{ fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); }
+
+  /* ============ DEVICE GATE ============ */
+  #deviceGate{
+    position:fixed; inset:0; z-index:9999; display:none;
+    background:var(--bg); color:var(--ink); direction:rtl;
+    flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:40px 24px;
+  }
+  html.device-blocked #deviceGate{ display:flex; }
+  html.device-blocked body{ overflow:hidden; }
+  .gate-code{
+    font-family:var(--font-display); font-weight:900; letter-spacing:.01em;
+    font-size:clamp(24px,6.5vw,34px); color:var(--blue); margin-bottom:24px;
+  }
+  .gate-icon{
+    width:64px; height:64px; border-radius:18px; display:grid; place-items:center;
+    background:var(--surface); border:1px solid var(--line); color:var(--blue); margin-bottom:22px;
+  }
+  .gate-icon svg{ width:32px; height:32px; }
+  .gate-title{ font-family:var(--font-display); font-size:clamp(22px,4.5vw,30px); font-weight:800; width:100%; max-width:20ch; color:var(--ink); }
+  .gate-sub{ font-size:clamp(14px,2.2vw,16px); color:var(--ink-soft); margin-top:12px; width:100%; max-width:36ch; font-weight:500; }
+  .gate-brand{ margin-top:34px; font-family:var(--font-mono); font-weight:700; color:var(--muted); font-size:13px; display:flex; align-items:center; gap:7px; }
+  .gate-brand .a{ color:var(--navy); }
+  .gate-brand .s{ color:var(--cyan); }
+
+  /* ============ CHROME ============ */
+  .progress-rail{ position:fixed; inset-inline:0; top:0; height:3px; background:var(--line); z-index:60; }
+  .progress-fill{ height:100%; width:0%; background:var(--blue); }
+
+  .side-nav{
+    position:fixed; inset-inline-end:20px; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:9px;
+    background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:11px 8px; z-index:60;
+  }
+  .side-nav button.chevron{ width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--muted); display:grid;place-items:center; }
+  .side-nav button.chevron:hover{ background:var(--surface-2); color:var(--blue); }
+  .side-nav button.chevron svg{ width:15px;height:15px; }
+  .dots{ display:flex; flex-direction:column; gap:8px; padding:3px 0; }
+  .dots button{ width:8px;height:8px;border-radius:50%; border:none; padding:0; background:var(--line); position:relative; }
+  .dots button.active{ background:var(--blue); }
+  .dots button:hover::after{
+    content:attr(data-label); position:absolute; inset-inline-end:18px; top:50%; transform:translateY(-50%);
+    background:var(--ink); color:var(--bg); font-size:11px; font-family:var(--font-body); font-weight:600;
+    padding:4px 9px; border-radius:6px; white-space:nowrap; pointer-events:none;
+  }
+
+  .foot-bar{
+    position:fixed; inset-inline:0; bottom:0; z-index:55;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:9px 22px; background:var(--navy); color:#eaf1ff; font-size:13px;
+  }
+  .foot-bar .brand{ display:flex; align-items:center; gap:7px; font-weight:700; }
+  .foot-bar .brand .dot-flip{ color:var(--cyan); font-family:var(--font-body); }
+  .foot-bar .mid{ color:#c6d6f7; font-weight:500; display:none; }
+  .foot-bar .meta{ display:flex; align-items:center; gap:14px; color:#c6d6f7; }
+  .foot-bar .meta b{ color:#fff; font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:600; }
+  @media (min-width:760px){ .foot-bar .mid{ display:block; } }
+
+  main#deck{ height:100vh; height:100dvh; overflow-y:auto; scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+  .slide{
+    min-height:100vh; min-height:100dvh; scroll-snap-align:start; scroll-snap-stop:always;
+    display:flex; align-items:center; justify-content:center; position:relative;
+    padding:var(--pad-t) 6vw var(--pad-b);
+  }
+  .slide.scrolly{ display:block; padding:0; }
+  .scrolly-pin{ position:sticky; top:0; height:100vh; height:100dvh; display:flex; align-items:center; justify-content:center; padding:var(--pad-t) 6vw var(--pad-b); }
+  .slide-inner{ width:100%; max-width:1140px; margin:0 auto; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700;
+    color:var(--blue); background:var(--cyan-soft); border:1px solid var(--line);
+    padding:5px 13px; border-radius:999px;
+  }
+  .slide-kicker{ font-size:clamp(24px,3.2vw,36px); margin-top:14px; }
+  .slide-sub{ font-size:clamp(15px,1.5vw,18px); color:var(--ink-soft); margin-top:9px; max-width:62ch; font-weight:500; min-height:1.6em; }
+
+  /* flow diagram */
+  .flow{ display:flex; align-items:flex-start; justify-content:center; gap:clamp(10px,2.4vw,30px); position:relative; flex-wrap:wrap; }
+  .flow-node{ display:flex; flex-direction:column; align-items:center; gap:11px; width:100px; }
+  .flow-node .badge{
+    width:var(--badge);height:var(--badge);border-radius:16px; display:grid; place-items:center;
+    background:var(--surface); border:1px solid var(--line); color:var(--blue); position:relative;
+  }
+  .flow-node .badge svg{ width:44%;height:44%; }
+  .flow-node .badge.pulse{ box-shadow:0 0 0 5px var(--cyan-soft); }
+  .flow-node .label{ font-weight:700; color:var(--ink); font-size:14.5px; }
+  .flow-arrow{ width:clamp(30px,4vw,56px); height:var(--badge); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .flow-arrow svg{ width:100%; height:20px; color:var(--muted); }
+  .flow-stage{ position:relative; padding:8px 6px 2px; }
+  .packet{
+    position:absolute; z-index:5; padding:5px 11px; border-radius:999px; font-family:var(--font-mono);
+    font-size:11px; font-weight:600; white-space:nowrap; direction:ltr; pointer-events:none; top:0; inset-inline-start:0;
+    border:1px solid transparent;
+  }
+  .packet.req{ background:var(--cyan-soft); color:var(--cyan); border-color:color-mix(in srgb, var(--cyan) 40%, transparent); }
+  .packet.ok{ background:var(--good-soft); color:var(--good); border-color:color-mix(in srgb, var(--good) 40%, transparent); }
+
+  .bubble{
+    position:relative; background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:8px 14px; font-weight:700; font-size:13px; color:var(--ink); max-width:190px; text-align:center;
+  }
+
+  /* buttons */
+  .btn{ display:inline-flex; align-items:center; gap:9px; border:none; border-radius:10px; padding:12px 24px; font-weight:700; font-size:14.5px; font-family:var(--font-body); }
+  .btn-primary{ background:var(--blue); color:#fff; }
+  .btn-primary:hover{ background:var(--blue-strong); }
+  .btn-primary:disabled{ opacity:.55; cursor:not-allowed; }
+  .btn-ghost{ background:var(--surface); color:var(--ink); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:var(--surface-2); }
+  .btn:focus-visible, button:focus-visible, input:focus-visible{ outline:3px solid var(--cyan); outline-offset:2px; }
+
+  /* =============== SLIDE 1 : HERO =============== */
+  .hero-grid{ display:grid; grid-template-columns:auto 1fr; gap:clamp(24px,6vw,64px); align-items:center; }
+  @media (max-width:760px){
+    .hero-grid{ grid-template-columns:1fr; text-align:center; justify-items:center; }
+    .hero-cta{ justify-content:center; }
+  }
+  .hero-logo{ display:flex; flex-direction:column; gap:0; line-height:.95; }
+  .hero-logo .a{ font-weight:900; font-size:clamp(40px,6vw,76px); color:var(--navy); }
+  .hero-logo .s{ font-weight:900; font-size:clamp(40px,6vw,76px); color:var(--cyan); }
+  .hero-logo .vs{ font-size:13px; color:var(--muted); margin:5px 2px; text-align:center; }
+  .hero-title{ font-size:clamp(28px,4.2vw,50px); font-weight:900; line-height:1.2; }
+  .hero-desc{ margin-top:16px; font-size:clamp(15px,1.6vw,18px); color:var(--ink-soft); max-width:54ch; font-weight:500; }
+  .hero-cta{ margin-top:28px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .hero-hint{ font-size:12.5px; color:var(--muted); font-weight:600; }
+
+  /* =============== callout / scrolly stages =============== */
+  .stage-panel{ margin-top:28px; padding:clamp(18px,2.6vw,36px) clamp(14px,2.6vw,30px) 26px; }
+  .callout{
+    margin-top:20px; display:flex; gap:11px; align-items:flex-start; background:var(--api-soft); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:13px 17px; opacity:0;
+  }
+  .callout b{ color:var(--api); }
+  .callout .icn{ width:19px;height:19px; color:var(--api); flex:0 0 auto; margin-top:2px; }
+
+  /* login (narrated + interactive) */
+  .login-grid{ display:grid; grid-template-columns:1.05fr 1fr; gap:26px; align-items:start; margin-top:24px; }
+  @media (max-width:920px){ .login-grid{ grid-template-columns:1fr; } }
+  .browser-mock{ overflow:hidden; }
+  .browser-bar{ display:flex; align-items:center; gap:9px; padding:10px 14px; background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .browser-dot{ width:9px;height:9px;border-radius:50%; }
+  .browser-url{ flex:1; background:var(--bg); border-radius:7px; padding:5px 11px; font-family:var(--font-mono); font-size:11px; color:var(--muted); direction:ltr; text-align:left; }
+  .browser-body{ padding:clamp(18px,2.6vw,28px); }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
+  .field .inp-wrap{ position:relative; }
+  .field .inp-wrap svg{ position:absolute; inset-inline-start:11px; top:50%; transform:translateY(-50%); width:15px;height:15px; color:var(--muted); }
+  .field input, .field .fake-input{
+    width:100%; border:1px solid var(--line); background:var(--surface-2); border-radius:9px; padding:10px 38px 10px 13px;
+    font-family:var(--font-mono); font-size:13px; color:var(--ink); direction:ltr; text-align:left; display:block;
+  }
+  .field input:focus{ outline:2px solid var(--blue); outline-offset:0; background:var(--surface); }
+  .login-hint{ font-size:11.5px; color:var(--muted); margin-top:4px; }
+  .login-submit{ width:100%; justify-content:center; margin-top:4px; }
+  .result-banner{ margin-top:14px; padding:11px 15px; border-radius:10px; font-weight:700; font-size:13px; display:flex; align-items:center; gap:9px; opacity:0; }
+  .result-banner.show{ opacity:1; }
+  .result-banner.ok{ background:var(--good-soft); color:var(--good); }
+  .result-banner.err{ background:var(--bad-soft); color:var(--bad); }
+  .result-banner svg{ width:18px;height:18px; flex:0 0 auto; }
+  @media (prefers-reduced-motion: no-preference){ .shake{ animation:shake .4s; } }
+  @keyframes shake{ 10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)} 30%,50%,70%{transform:translateX(-6px)} 40%,60%{transform:translateX(6px)} }
+
+  .flow-side{ display:flex; flex-direction:column; gap:18px; }
+  .console{
+    background:#0b1330; color:#8fe3b3; font-family:var(--font-mono); border-radius:12px; padding:15px;
+    font-size:11.5px; line-height:1.85; direction:ltr; text-align:left; height:var(--console-h); overflow-y:auto; border:1px solid #1c2a52;
+  }
+  .console .l{ opacity:1; }
+  .console .muted{ color:#6d84c4; }
+  .console .ok{ color:#5be8a4; }
+  .console-title{ font-size:11px; color:var(--muted); font-weight:700; display:flex; align-items:center; gap:7px; margin-bottom:2px; }
+  .console-title .led{ width:7px;height:7px;border-radius:50%; background:var(--good); }
+  .step-note{ font-size:12.5px; color:var(--muted); font-weight:600; margin-top:2px; }
+
+  /* =============== statement =============== */
+  .statement-wrap{ text-align:center; }
+  .statement-text{ font-size:clamp(24px,3.2vw,36px); font-weight:800; max-width:19ch; line-height:1.35; margin:22px auto 0; }
+  .statement-text .hi{ color:var(--blue); }
+
+  /* =============== SDK =============== */
+  .step-row{ display:flex; align-items:center; gap:13px; background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:12px 16px; margin-bottom:9px; }
+  .step-row .num{ width:26px;height:26px;border-radius:8px; background:var(--api-soft); color:var(--api); display:grid; place-items:center; font-weight:800; font-size:12.5px; flex:0 0 auto; }
+  .step-row code{ background:var(--surface-2); border-radius:7px; padding:2px 8px; font-size:12px; }
+  .step-row .txt{ font-weight:600; color:var(--ink); font-size:14px; }
+  .sdk-oneliner{ background:var(--sdk-soft); border:1px solid var(--line); border-radius:14px; padding:22px 24px; text-align:center; margin-top:16px; }
+  .sdk-oneliner code{ font-size:clamp(14px,1.8vw,18px); font-weight:700; color:var(--navy); background:var(--surface); padding:9px 16px; border-radius:10px; display:inline-block; border:1px solid var(--line); }
+  .sdk-oneliner p{ margin-top:12px; color:var(--ink-soft); font-weight:600; font-size:14px; }
+
+  /* =============== comparison =============== */
+  .compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:26px; }
+  @media (max-width:820px){ .compare-grid{ grid-template-columns:1fr; } }
+  .compare-card{ padding:22px 20px; }
+  .compare-card .ic{ width:46px;height:46px;border-radius:12px; display:grid; place-items:center; margin-bottom:14px; }
+  .compare-card .ic svg{ width:23px;height:23px; }
+  .compare-card.api .ic{ background:var(--api-soft); color:var(--api); }
+  .compare-card.sdk .ic{ background:var(--sdk-soft); color:var(--sdk); }
+  .compare-card h3{ font-size:20px; font-weight:800; margin-bottom:7px; }
+  .compare-card p{ color:var(--ink-soft); font-size:14px; line-height:1.65; font-weight:500; }
+
+  .containment{ margin-top:22px; }
+  .sdk-outer{ border:1.5px dashed var(--sdk); border-radius:16px; padding:20px; position:relative; }
+  .sdk-outer-label{ position:absolute; top:-12px; inset-inline-start:20px; background:var(--bg); padding:0 9px; font-weight:800; font-size:12px; color:var(--sdk); }
+  .api-inner{ background:var(--api-soft); border:1px solid var(--line); border-radius:11px; padding:12px 16px; font-weight:700; color:var(--api); text-align:center; margin-bottom:12px; font-size:13.5px; }
+  .tool-chips{ display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+  .tool-chip{ display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 13px; font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .tool-chip svg{ width:14px;height:14px; color:var(--sdk); }
+
+  /* =============== thanks =============== */
+  #slide-8 .slide-inner{ text-align:center; }
+  .thanks-title{ font-size:clamp(38px,6vw,68px); font-weight:900; }
+  .recap-chips{ display:flex; gap:10px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
+  .recap-chip{ padding:8px 18px; border-radius:999px; font-weight:800; font-size:13.5px; border:1px solid var(--line); background:var(--surface); }
+
+  .sr-only{ position:absolute; width:1px;height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+  /* =============== responsive: short / narrow desktop windows =============== */
+  @media (max-height:820px){
+    :root{ --badge:60px; --pad-t:56px; --pad-b:40px; --console-h:140px; }
+    .stage-panel{ margin-top:18px; }
+    .login-grid{ gap:18px; margin-top:16px; }
+    .field{ margin-bottom:10px; }
+    .step-row{ padding:9px 14px; margin-bottom:7px; }
+    .sdk-oneliner{ padding:16px 18px; margin-top:10px; }
+  }
+  @media (max-height:680px){
+    :root{ --badge:50px; --pad-t:40px; --pad-b:28px; --console-h:110px; }
+    .slide-sub{ margin-top:5px; min-height:0; }
+    .stage-panel{ margin-top:10px; }
+    .login-grid{ gap:12px; margin-top:10px; }
+    .browser-body{ padding:14px; }
+    .field{ margin-bottom:7px; }
+    .field label{ margin-bottom:3px; }
+    .console{ font-size:10.5px; line-height:1.6; padding:10px; }
+  }
+  @media (max-width:680px){
+    .side-nav{ inset-inline-end:10px; }
+    .foot-bar{ padding:8px 14px; font-size:12px; }
+  }
+</style>
+
+
+</head>
+<body>
+<div id="app" dir="rtl" lang="he">
+
+  <script>
+    (function(){
+      try{
+        var ua = navigator.userAgent || navigator.vendor || '';
+        var mobileUA = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Windows Phone/i.test(ua);
+        var tabletUA = /iPad|Tablet|PlayBook|Silk|Kindle/i.test(ua);
+        var iPadOS = /Macintosh/i.test(ua) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+        if(mobileUA || tabletUA || iPadOS){
+          document.documentElement.classList.add('device-blocked');
+        }
+      }catch(e){}
+    })();
+  </script>
+
+  <div id="deviceGate" role="alert" aria-live="polite">
+    <div class="gate-code">שגיאה: 404</div>
+    <div class="gate-icon">
+      <svg viewBox="0 0 48 48" class="icon"><rect x="5" y="8" width="38" height="25" rx="3"/><path d="M18 40h12M24 33v7"/></svg>
+    </div>
+    <h1 class="gate-title">האתר זמין במחשבים בלבד</h1>
+    <p class="gate-sub">על מנת להשתמש באתר יש להיכנס דרך מכשיר נתמך.</p>
+    <div class="gate-brand"><span class="a">API</span><span>⇄</span><span class="s">SDK</span></div>
+  </div>
+
+  <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+
+  <nav class="side-nav" aria-label="ניווט בין שקופיות">
+    <button class="chevron" id="upBtn" aria-label="שקופית קודמת" title="קודם">
+      <svg viewBox="0 0 24 24" class="icon"><path d="M6 15l6-6 6 6"/></svg>
+    </button>
+    <div class="dots" id="dots"></div>
+    <button class="chevron" id="downBtn" aria-label="שקופית הבאה" title="הבא">
+      <svg viewBox="0 0 24 24" class="icon"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+  </nav>
+
+  <footer class="foot-bar">
+    <div class="brand"><span>API</span><span class="dot-flip">⇄</span><span>SDK</span></div>
+    <div class="mid">מה ההבדל בין <span class="en">API</span> ל-<span class="en">SDK</span>? · שיעור אינטראקטיבי</div>
+    <div class="meta"><span>איתמר כהן</span><b id="counter">01 / 08</b></div>
+  </footer>
+
+  <main id="deck">
+
+    <!-- ============ SLIDE 1 — HERO ============ -->
+    <section class="slide" id="slide-1" data-title="פתיחה">
+      <div class="slide-inner">
+        <div class="hero-grid">
+          <div class="hero-logo">
+            <span class="a">API</span>
+            <span class="vs">vs</span>
+            <span class="s">SDK</span>
+          </div>
+          <div>
+            <span class="eyebrow">שיעור אינטראקטיבי · פיתוח תוכנה</span>
+            <h1 class="hero-title">מה בעצם <span style="color:var(--blue)">ההבדל</span><br>בין <span class="en">API</span> ל-<span class="en">SDK</span>?</h1>
+            <p class="hero-desc">שתי מילים ששומעים כל הזמן בעולם הפיתוח. בשיעור הזה נבין את ההבדל ביניהן דרך דוגמה ממסעדה, ודרך מסך התחברות אמיתי. גללו לאט — אפשר לעצור בכל רגע באמצע ולהסביר.</p>
+            <div class="hero-cta">
+              <button class="btn btn-primary" id="startBtn">בואו נתחיל<svg viewBox="0 0 24 24" class="icon" style="width:16px;height:16px"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <span class="hero-hint">אפשר גם לנווט עם החיצים במקלדת</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 2 — RESTAURANT (scrolly) ============ -->
+    <section class="slide scrolly" id="slide-2" data-title="שפת התקשורת" style="min-height:380vh;">
+      <div class="scrolly-pin">
+        <div class="slide-inner">
+          <span class="eyebrow"><span class="en">API</span> — שפת התקשורת</span>
+          <h2 class="slide-kicker">דוגמה: איך אתם מזמינים במסעדה?</h2>
+          <p class="slide-sub" id="restCaption">בואו נעקוב אחרי הזמנה אחת, צעד אחר צעד.</p>
+
+          <div class="card stage-panel">
+            <div class="flow-stage" id="restaurantStage">
+              <div class="flow">
+                <div class="flow-node">
+                  <div class="bubble" id="bubbleYou" style="opacity:0">"אפשר פסטה רוזה?"</div>
+                  <div class="badge" id="nodeYou"><svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="15" r="8"/><path d="M7 41c0-10 7.5-16.5 17-16.5S41 31 41 41"/></svg></div>
+                  <div class="label">אתם</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node">
+                  <div class="bubble" id="bubbleWaiter" style="opacity:0">"אחד פסטה רוזה"</div>
+                  <div class="badge" id="nodeWaiter"><svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="13" r="7"/><path d="M9 40c0-9.6 6.7-15.6 15-15.6S39 30.4 39 40"/><path d="M20 20l4 2.4 4-2.4v4.6l-4-2.4-4 2.4z" fill="currentColor" stroke="none"/><path d="M15 32.5h18M17 32.5v3M31 32.5v3"/></svg></div>
+                  <div class="label">מלצר</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node">
+                  <div class="bubble" id="bubbleKitchen" style="opacity:0">מכינים פסטה רוזה…</div>
+                  <div class="badge" id="nodeKitchen"><svg viewBox="0 0 48 48" class="icon"><path d="M7 34c0-10 7.6-17 17-17s17 7 17 17"/><path d="M4 34h40"/><path d="M24 17v-4"/><circle cx="24" cy="10" r="2.6" fill="currentColor" stroke="none"/></svg></div>
+                  <div class="label">מטבח</div>
+                </div>
+                <div class="packet req" id="restPacket" style="opacity:0">בקשה</div>
+              </div>
+            </div>
+            <div class="callout" id="apiCallout">
+              <svg viewBox="0 0 24 24" class="icon icn"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+              <div><b>שימו לב:</b> אתם לא מדברים ישירות עם המטבח — אתם מדברים דרך המלצר, שמכיר את השפה של שניכם. בדיוק ככה <b><span class="en">API</span></b> מתווך בין שתי תוכנות שרוצות "לדבר" אחת עם השנייה.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 3 — LOGIN NARRATED (scrolly) ============ -->
+    <section class="slide scrolly" id="slide-3" data-title="דוגמה מתקדמת" style="min-height:440vh;">
+      <div class="scrolly-pin">
+        <div class="slide-inner">
+          <span class="eyebrow">דוגמה מתקדמת</span>
+          <h2 class="slide-kicker">איך אתם מתחברים לאתר של הבנק?</h2>
+          <p class="slide-sub" id="loginCaption">אותו רעיון בדיוק — רק ש"המלצר" הוא ה־<span class="en">API</span> של השרת.</p>
+
+          <div class="login-grid">
+            <div class="card browser-mock">
+              <div class="browser-bar">
+                <span class="browser-dot" style="background:#ef6a5f"></span>
+                <span class="browser-dot" style="background:#f4bd4f"></span>
+                <span class="browser-dot" style="background:#61c454"></span>
+                <span class="browser-url">🔒 bank-app.example.co.il/login</span>
+              </div>
+              <div class="browser-body">
+                <div class="field">
+                  <label>שם משתמש</label>
+                  <div class="inp-wrap">
+                    <svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="15" r="8"/><path d="M7 41c0-10 7.5-16.5 17-16.5S41 31 41 41"/></svg>
+                    <div class="fake-input">itamar123</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>סיסמה</label>
+                  <div class="inp-wrap">
+                    <svg viewBox="0 0 48 48" class="icon"><rect x="12" y="21" width="24" height="20" rx="4"/><path d="M17 21v-5a7 7 0 0114 0v5"/><circle cx="24" cy="30" r="2.4" fill="currentColor" stroke="none"/></svg>
+                    <div class="fake-input">pass123</div>
+                  </div>
+                </div>
+                <div class="btn btn-primary login-submit" style="justify-content:center; opacity:.55; pointer-events:none;">
+                  <svg viewBox="0 0 24 24" class="icon" style="width:16px;height:16px"><path d="M15 5l7 7-7 7M3 12h18"/></svg>
+                  התחברו
+                </div>
+                <div class="result-banner ok" id="narrBanner" style="opacity:0">
+                  <svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>
+                  <span>ברוך הבא, itamar123! התחברת בהצלחה.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flow-side">
+              <div class="card stage-panel" style="margin-top:0; padding:22px 15px 20px;">
+                <div class="flow-stage" id="loginStage">
+                  <div class="flow">
+                    <div class="flow-node">
+                      <div class="badge" id="nClient"><svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="15" r="8"/><path d="M7 41c0-10 7.5-16.5 17-16.5S41 31 41 41"/></svg></div>
+                      <div class="label">אתם</div>
+                    </div>
+                    <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="flow-node">
+                      <div class="badge" id="nSite"><svg viewBox="0 0 48 48" class="icon"><rect x="6" y="8" width="36" height="24" rx="3"/><circle cx="24" cy="20" r="7"/><path d="M17 20h14M24 13v14M19.6 15.3a10 10 0 000 9.4M28.4 15.3a10 10 0 010 9.4"/><path d="M3 38l6-6h30l6 6"/></svg></div>
+                      <div class="label">אתר</div>
+                    </div>
+                    <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div class="flow-node">
+                      <div class="badge" id="nServer"><svg viewBox="0 0 48 48" class="icon"><ellipse cx="24" cy="9" rx="15" ry="5"/><path d="M9 9v10c0 2.76 6.7 5 15 5s15-2.24 15-5V9"/><path d="M9 19v10c0 2.76 6.7 5 15 5s15-2.24 15-5V19"/><path d="M9 29v9c0 2.76 6.7 5 15 5s15-2.24 15-5v-9"/></svg></div>
+                      <div class="label">שרת</div>
+                    </div>
+                    <div class="packet req" id="narrReqPacket" style="opacity:0">בקשת התחברות</div>
+                    <div class="packet ok" id="narrResPacket" style="opacity:0">✓ מתאים</div>
+                  </div>
+                </div>
+              </div>
+              <div class="card" style="padding:15px;">
+                <div class="console-title"><span class="led"></span>מאחורי הקלעים</div>
+                <div class="console" id="narrConsole">
+                  <div class="l" data-at="0.10" style="opacity:0"><span class="muted">שולחים בקשה: "אפשר להתחבר?"</span></div>
+                  <div class="l" data-at="0.32" style="opacity:0">מגיעה לאתר, שמעביר אותה לשרת</div>
+                  <div class="l" data-at="0.34" style="opacity:0"><span class="muted">שם משתמש: itamar123  ·  סיסמה: ••••••</span></div>
+                  <div class="l" data-at="0.56" style="opacity:0"><span class="muted">השרת בודק אם הפרטים נכונים…</span></div>
+                  <div class="l" data-at="0.72" style="opacity:0"><span class="ok">✓ הפרטים נכונים</span> <span class="muted">— מתחברים!</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 4 — TRY IT YOURSELF (interactive, slow) ============ -->
+    <section class="slide" id="slide-4" data-title="נסו בעצמכם">
+      <div class="slide-inner">
+        <span class="eyebrow">עכשיו אתם</span>
+        <h2 class="slide-kicker">נסו בעצמכם</h2>
+        <p class="slide-sub">אותו מסך בדיוק — הפעם תוכלו ללחוץ ולראות מה קורה. נסו גם עם סיסמה שגויה.</p>
+
+        <div class="login-grid">
+          <div class="card browser-mock">
+            <div class="browser-bar">
+              <span class="browser-dot" style="background:#ef6a5f"></span>
+              <span class="browser-dot" style="background:#f4bd4f"></span>
+              <span class="browser-dot" style="background:#61c454"></span>
+              <span class="browser-url">🔒 bank-app.example.co.il/login</span>
+            </div>
+            <div class="browser-body">
+              <div class="field">
+                <label for="userInput">שם משתמש</label>
+                <div class="inp-wrap">
+                  <svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="15" r="8"/><path d="M7 41c0-10 7.5-16.5 17-16.5S41 31 41 41"/></svg>
+                  <input id="userInput" type="text" value="itamar123" autocomplete="off">
+                </div>
+              </div>
+              <div class="field">
+                <label for="passInput">סיסמה</label>
+                <div class="inp-wrap">
+                  <svg viewBox="0 0 48 48" class="icon"><rect x="12" y="21" width="24" height="20" rx="4"/><path d="M17 21v-5a7 7 0 0114 0v5"/><circle cx="24" cy="30" r="2.4" fill="currentColor" stroke="none"/></svg>
+                  <input id="passInput" type="text" value="pass123" autocomplete="off">
+                </div>
+                <div class="login-hint">רמז: הסיסמה הנכונה היא <code>pass123</code>. נסו סיסמה שגויה ותראו מה קורה מאחורי הקלעים →</div>
+              </div>
+              <button class="btn btn-primary login-submit" id="loginBtn">
+                <svg viewBox="0 0 24 24" class="icon" style="width:16px;height:16px"><path d="M15 5l7 7-7 7M3 12h18"/></svg>
+                התחברו
+              </button>
+              <div class="result-banner" id="resultBanner"></div>
+            </div>
+          </div>
+
+          <div class="flow-side">
+            <div class="card stage-panel" style="margin-top:0; padding:22px 15px 20px;">
+              <div class="flow-stage" id="tryStage">
+                <div class="flow">
+                  <div class="flow-node">
+                    <div class="badge" id="tClient"><svg viewBox="0 0 48 48" class="icon"><circle cx="24" cy="15" r="8"/><path d="M7 41c0-10 7.5-16.5 17-16.5S41 31 41 41"/></svg></div>
+                    <div class="label">אתם</div>
+                  </div>
+                  <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="flow-node">
+                    <div class="badge" id="tSite"><svg viewBox="0 0 48 48" class="icon"><rect x="6" y="8" width="36" height="24" rx="3"/><circle cx="24" cy="20" r="7"/><path d="M17 20h14M24 13v14M19.6 15.3a10 10 0 000 9.4M28.4 15.3a10 10 0 010 9.4"/><path d="M3 38l6-6h30l6 6"/></svg></div>
+                    <div class="label">אתר</div>
+                  </div>
+                  <div class="flow-arrow"><svg viewBox="0 0 64 24" preserveAspectRatio="none"><line x1="58" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/><path d="M16 6l-8 6 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <div class="flow-node">
+                    <div class="badge" id="tServer"><svg viewBox="0 0 48 48" class="icon"><ellipse cx="24" cy="9" rx="15" ry="5"/><path d="M9 9v10c0 2.76 6.7 5 15 5s15-2.24 15-5V9"/><path d="M9 19v10c0 2.76 6.7 5 15 5s15-2.24 15-5V19"/><path d="M9 29v9c0 2.76 6.7 5 15 5s15-2.24 15-5v-9"/></svg></div>
+                    <div class="label">שרת</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="padding:15px;">
+              <div class="console-title"><span class="led"></span>מאחורי הקלעים — בזמן אמת</div>
+              <div class="console" id="console">
+                <div class="l muted">לחצו על "התחברו" כדי לראות מה קורה מאחורי הקלעים</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 5 — STATEMENT ============ -->
+    <section class="slide" id="slide-5" data-title="סיכום קצר">
+      <div class="slide-inner statement-wrap">
+        <span class="eyebrow">סיכום בקצרה</span>
+        <p class="statement-text"><span class="hi en">API</span> הוא בעצם דרך שבה תוכנות מדברות אחת עם השנייה.</p>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 6 — SDK (scrolly) ============ -->
+    <section class="slide scrolly" id="slide-6" data-title="ארגז הכלים – SDK" style="min-height:320vh;">
+      <div class="scrolly-pin">
+        <div class="slide-inner">
+          <span class="eyebrow">ארגז הכלים למפתח</span>
+          <h2 class="slide-kicker">אז מה זה <span class="en">SDK</span>?</h2>
+          <p class="slide-sub">בואו נחזור לדוגמת ההתחברות לבנק — הפעם מנקודת המבט של מי שבונה את האתר, וצריך לכתוב בעצמו כל שלב בדרך.</p>
+
+          <div id="sdkStepsWrap">
+            <div class="step-row" id="sdkStep1" style="opacity:0"><span class="num">1</span><span class="txt">להכין "מעטפה" מסודרת שהשרת יידע לקרוא</span></div>
+            <div class="step-row" id="sdkStep2" style="opacity:0"><span class="num">2</span><span class="txt">לצרף פרטים שמזהים מי שולח ומה מבקשים</span></div>
+            <div class="step-row" id="sdkStep3" style="opacity:0"><span class="num">3</span><span class="txt">לשלוח את הבקשה עם שם המשתמש והסיסמה</span></div>
+            <div class="step-row" id="sdkStep4" style="opacity:0"><span class="num">4</span><span class="txt">לחכות לתשובה, ולדעת מה לעשות אם היא לא מגיעה</span></div>
+            <div class="step-row" id="sdkStep5" style="opacity:0"><span class="num">5</span><span class="txt">לקרוא את התשובה ולהבין אם ההתחברות הצליחה</span></div>
+          </div>
+          <div class="sdk-oneliner" id="sdkOneliner" style="opacity:0">
+            <code class="ltr">client.login("itamar123", "pass123")</code>
+            <p>שורה אחת קצרה. ה־<span class="en">SDK</span> עושה בשבילכם את כל 5 השלבים האלה מאחורי הקלעים.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 7 — COMPARISON ============ -->
+    <section class="slide" id="slide-7" data-title="API מול SDK">
+      <div class="slide-inner">
+        <span class="eyebrow">לסיכום</span>
+        <h2 class="slide-kicker"><span class="en">API</span> מול <span class="en">SDK</span>, זה לצד זה</h2>
+
+        <div class="compare-grid">
+          <div class="card compare-card api">
+            <div class="ic"><svg viewBox="0 0 48 48" class="icon"><path d="M17 6v10M31 6v10"/><rect x="12" y="16" width="24" height="14" rx="6"/><path d="M24 30v6a8 8 0 01-8 8h-4"/></svg></div>
+            <h3>API</h3>
+            <p>דרך מוגדרת לתקשר עם מערכת קיימת. בדיוק כמו התפריט שדרכו מזמינים מהמטבח — הוא קובע <b>אילו בקשות אפשר לשלוח</b> ואיזו תשובה תקבלו בחזרה.</p>
+          </div>
+          <div class="card compare-card sdk">
+            <div class="ic"><svg viewBox="0 0 48 48" class="icon"><rect x="6" y="18" width="36" height="22" rx="4"/><path d="M16 18v-4a4 4 0 014-4h8a4 4 0 014 4v4"/><path d="M6 28h36"/></svg></div>
+            <h3>SDK</h3>
+            <p>ארגז כלים שלם שעוזר לבנות תוכנה שמשתמשת במערכת הזאת — <b>כולל בתוכו שימוש ב־<span class="en">API</span></b>, ועוד הסברים, קיצורי דרך וכלי עזר שחוסכים לכם המון עבודה.</p>
+          </div>
+        </div>
+
+        <div class="containment">
+          <div class="sdk-outer">
+            <span class="sdk-outer-label">SDK</span>
+            <div class="api-inner">שימוש ב־<span class="en">API</span></div>
+            <div class="tool-chips">
+              <span class="tool-chip"><svg viewBox="0 0 24 24" class="icon"><path d="M6 4h9l3 3v13H6z"/><path d="M9 10h6M9 14h6"/></svg>הסברים</span>
+              <span class="tool-chip"><svg viewBox="0 0 24 24" class="icon"><path d="M14.7 6.3a4 4 0 01-5.3 5.3L5 16l3 3 4.4-4.4a4 4 0 015.3-5.3z"/></svg>קיצורי דרך</span>
+              <span class="tool-chip"><svg viewBox="0 0 24 24" class="icon"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>עזרה כשמשהו משתבש</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 8 — THANKS ============ -->
+    <section class="slide" id="slide-8" data-title="תודה">
+      <div class="slide-inner">
+        <h2 class="thanks-title">תודה!</h2>
+        <p class="slide-sub" style="margin:12px auto 0; text-align:center;">עכשיו כשאתם יודעים להסביר את ההבדל — ספרו למישהו שאתם מכירים על המלצר, המטבח, ומה שקורה כשלוחצים "התחברו".</p>
+        <div class="recap-chips">
+          <span class="recap-chip" style="color:var(--api);"><span class="en">API</span> = שפת תקשורת</span>
+          <span class="recap-chip" style="color:var(--sdk);"><span class="en">SDK</span> = ארגז כלים</span>
+          <span class="recap-chip" style="color:var(--blue);">שרת = עונה לבקשות</span>
+        </div>
+        <div style="margin-top:30px; display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+          <button class="btn btn-ghost" id="restartBtn"><svg viewBox="0 0 24 24" class="icon" style="width:15px;height:15px"><path d="M4 4v6h6M20 20v-6h-6M5.5 15a7 7 0 0012-4.5M18.5 9a7 7 0 00-12 4.5"/></svg>חזרה להתחלה</button>
+        </div>
+        <p style="margin-top:24px; color:var(--muted); font-size:13px; font-weight:600; text-align:center;">איתמר כהן · שיעור אינטראקטיבי</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var deck = document.getElementById('deck');
+  var dotsWrap = document.getElementById('dots');
+  var progressFill = document.getElementById('progressFill');
+  var counter = document.getElementById('counter');
+  var current = 0;
+
+  slides.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.setAttribute('data-label', s.getAttribute('data-title'));
+    b.setAttribute('aria-label', 'עבור לשקופית: ' + s.getAttribute('data-title'));
+    if(i===0) b.classList.add('active');
+    b.addEventListener('click', function(){ goTo(i); });
+    dotsWrap.appendChild(b);
+  });
+  var dotEls = Array.prototype.slice.call(dotsWrap.children);
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function band(p,a,b){ return clamp((p-a)/(b-a),0,1); }
+
+  function setActive(i){
+    if(i===current){ return; }
+    current = i;
+    dotEls.forEach(function(d, idx){ d.classList.toggle('active', idx===i); });
+    counter.textContent = pad(i+1) + ' / ' + pad(slides.length);
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[i].scrollIntoView({behavior: reduced ? 'auto':'smooth', block:'start'});
+  }
+
+  document.getElementById('upBtn').addEventListener('click', function(){ goTo(current-1); });
+  document.getElementById('downBtn').addEventListener('click', function(){ goTo(current+1); });
+  document.getElementById('startBtn').addEventListener('click', function(){ goTo(1); });
+  document.getElementById('restartBtn').addEventListener('click', function(){ goTo(0); });
+
+  window.addEventListener('keydown', function(e){
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); goTo(current+1); }
+    else if(e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); goTo(current-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); goTo(0); }
+    else if(e.key === 'End'){ e.preventDefault(); goTo(slides.length-1); }
+  });
+
+  /* ---------- generic path placement for scroll-scrubbed packets ---------- */
+  function place(stage, fromEl, toEl, el, t){
+    var s = stage.getBoundingClientRect(), f = fromEl.getBoundingClientRect(), to = toEl.getBoundingClientRect();
+    var fx = f.left+f.width/2-s.left, fy = f.top+f.height/2-s.top;
+    var tx = to.left+to.width/2-s.left, ty = to.top+to.height/2-s.top;
+    var x = fx+(tx-fx)*t, y = fy+(ty-fy)*t-44;
+    el.style.transform = 'translate('+(x-el.offsetWidth/2)+'px,'+(y-el.offsetHeight/2)+'px)';
+  }
+  function placePath(stage, nodes, el, t){
+    var n = nodes.length-1;
+    var seg = clamp(t,0,0.999999)*n;
+    var i = Math.floor(seg);
+    place(stage, nodes[i], nodes[i+1], el, seg-i);
+  }
+
+  var scrollyUpdaters = [];
+
+  /* ---------- SLIDE 2: restaurant scrolly ---------- */
+  (function(){
+    var root=document.getElementById('slide-2');
+    if(!root) return;
+    var stage=document.getElementById('restaurantStage');
+    var you=document.getElementById('nodeYou'), waiter=document.getElementById('nodeWaiter'), kitchen=document.getElementById('nodeKitchen');
+    var bYou=document.getElementById('bubbleYou'), bWaiter=document.getElementById('bubbleWaiter'), bKitchen=document.getElementById('bubbleKitchen');
+    var packet=document.getElementById('restPacket');
+    var callout=document.getElementById('apiCallout');
+    var caption=document.getElementById('restCaption');
+    var texts=[[0,'בואו נעקוב אחרי הזמנה אחת, צעד אחר צעד.'],[0.08,'אתם פונים למלצר עם הבקשה שלכם.'],[0.40,'המלצר מעביר את ההזמנה למטבח — הוא לא מבשל בעצמו.'],[0.78,'המטבח מכין את המנה, בלי לדבר איתכם ישירות בכלל.']];
+    function updateCaption(p){ var t=texts[0][1]; for(var i=0;i<texts.length;i++) if(p>=texts[i][0]) t=texts[i][1]; if(caption.textContent!==t) caption.textContent=t; }
+    function update(p){
+      updateCaption(p);
+      var bY = band(p,0.06,0.14) * (1-band(p,0.20,0.26));
+      bYou.style.opacity = bY;
+      var pT = band(p,0.24,0.80);
+      var pVis = p>0.22 && p<0.84;
+      packet.style.opacity = pVis ? band(p,0.22,0.27)*(1-band(p,0.80,0.84)) : 0;
+      if(pVis) placePath(stage, [you,waiter,kitchen], packet, pT);
+      var bW = band(p,0.48,0.56) * (1-band(p,0.66,0.74));
+      bWaiter.style.opacity = bW;
+      var bK = band(p,0.80,0.90);
+      bKitchen.style.opacity = bK;
+      var co = band(p,0.90,1.0);
+      callout.style.opacity = co;
+    }
+    scrollyUpdaters.push(function(){
+      var rect=root.getBoundingClientRect();
+      var total=rect.height-window.innerHeight;
+      var p= total>0 ? clamp((0-rect.top)/total,0,1) : 0;
+      update(p);
+    });
+  })();
+
+  /* ---------- SLIDE 3: login narrated scrolly ---------- */
+  (function(){
+    var root=document.getElementById('slide-3');
+    if(!root) return;
+    var stage=document.getElementById('loginStage');
+    var client=document.getElementById('nClient'), site=document.getElementById('nSite'), server=document.getElementById('nServer');
+    var reqPacket=document.getElementById('narrReqPacket'), resPacket=document.getElementById('narrResPacket');
+    var caption=document.getElementById('loginCaption');
+    var lines=Array.prototype.slice.call(document.querySelectorAll('#narrConsole .l'));
+    var banner=document.getElementById('narrBanner');
+    var texts=[[0,'אותו רעיון בדיוק — רק ש"המלצר" הוא ה־API של השרת.'],[0.08,'התוכנה שלכם שולחת את הבקשה הלאה, לאתר.'],[0.30,'האתר פונה אל השרת ומבקש לבדוק את הפרטים.'],[0.52,'השרת בודק אם שם המשתמש והסיסמה נכונים.'],[0.68,'מתקבלת תשובה — וההתחברות מצליחה.']];
+    function updateCaption(p){ var t=texts[0][1]; for(var i=0;i<texts.length;i++) if(p>=texts[i][0]) t=texts[i][1]; if(caption.textContent!==t) caption.textContent=t; }
+    function update(p){
+      updateCaption(p);
+      var reqT = band(p,0.06,0.52);
+      var reqVis = p>0.04 && p<0.55;
+      reqPacket.style.opacity = reqVis ? band(p,0.04,0.09)*(1-band(p,0.50,0.55)) : 0;
+      if(reqVis) placePath(stage, [client,site,server], reqPacket, reqT);
+      server.classList.toggle('pulse', p>=0.32 && p<0.64);
+      lines.forEach(function(el){
+        var at=parseFloat(el.getAttribute('data-at'));
+        el.style.opacity = p>=at ? 1 : 0;
+      });
+      var resT = band(p,0.64,0.92);
+      var resVis = p>0.62 && p<0.95;
+      resPacket.style.opacity = resVis ? band(p,0.62,0.66)*(1-band(p,0.90,0.95)) : 0;
+      if(resVis) placePath(stage, [server,site,client], resPacket, resT);
+      var bo = band(p,0.82,0.95);
+      banner.style.opacity = bo;
+    }
+    scrollyUpdaters.push(function(){
+      var rect=root.getBoundingClientRect();
+      var total=rect.height-window.innerHeight;
+      var p= total>0 ? clamp((0-rect.top)/total,0,1) : 0;
+      update(p);
+    });
+  })();
+
+  /* ---------- SLIDE 6: SDK scrolly ---------- */
+  (function(){
+    var root=document.getElementById('slide-6');
+    if(!root) return;
+    var steps=[1,2,3,4,5].map(function(n){ return document.getElementById('sdkStep'+n); });
+    var thresholds=[0.04,0.20,0.36,0.52,0.68];
+    var oneliner=document.getElementById('sdkOneliner');
+    var stepsWrap=document.getElementById('sdkStepsWrap');
+    function update(p){
+      steps.forEach(function(el,i){ el.style.opacity = band(p, thresholds[i], thresholds[i]+0.09); });
+      var reveal = band(p,0.80,0.96);
+      oneliner.style.opacity = reveal;
+      stepsWrap.style.opacity = 1-0.55*reveal;
+    }
+    scrollyUpdaters.push(function(){
+      var rect=root.getBoundingClientRect();
+      var total=rect.height-window.innerHeight;
+      var p= total>0 ? clamp((0-rect.top)/total,0,1) : 0;
+      update(p);
+    });
+  })();
+
+  /* ---------- unified scroll loop: active slide + progress + scrolly ---------- */
+  function onScroll(){
+    var vh=window.innerHeight, refY=vh*0.35, idx=current;
+    slides.forEach(function(s,i){ var r=s.getBoundingClientRect(); if(r.top<=refY && r.bottom>refY) idx=i; });
+    setActive(idx);
+    var max=deck.scrollHeight-deck.clientHeight;
+    progressFill.style.width=(max>0?(deck.scrollTop/max*100):0)+'%';
+    scrollyUpdaters.forEach(function(fn){ fn(); });
+  }
+  var ticking=false;
+  deck.addEventListener('scroll', function(){
+    if(!ticking){ ticking=true; requestAnimationFrame(function(){ onScroll(); ticking=false; }); }
+  }, {passive:true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  /* ---------- SLIDE 4: interactive "try it yourself" login (slow, click-based) ---------- */
+  (function(){
+    var btn = document.getElementById('loginBtn');
+    var stage = document.getElementById('tryStage');
+    var client = document.getElementById('tClient'), site = document.getElementById('tSite'), server = document.getElementById('tServer');
+    var userInput = document.getElementById('userInput'), passInput = document.getElementById('passInput');
+    var form = document.querySelector('#slide-4 .browser-body');
+    var banner = document.getElementById('resultBanner');
+    var consoleEl = document.getElementById('console');
+    var busy = false;
+
+    function log(html){
+      var d = document.createElement('div');
+      d.className = 'l';
+      d.innerHTML = html;
+      consoleEl.appendChild(d);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    function clearBanner(){ banner.className = 'result-banner'; banner.innerHTML=''; }
+    function okIcon(){ return '<svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>'; }
+    function errIcon(){ return '<svg viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>'; }
+    function wait(ms){ return new Promise(function(r){ setTimeout(r, reduced ? 1 : ms); }); }
+    function fly(fromEl, toEl, label, cls, dur){
+      return new Promise(function(resolve){
+        var packet = document.createElement('div');
+        packet.className = 'packet ' + cls;
+        packet.textContent = label;
+        stage.appendChild(packet);
+        var stageRect = stage.getBoundingClientRect(), fr = fromEl.getBoundingClientRect(), tr = toEl.getBoundingClientRect();
+        var fx=fr.left+fr.width/2-stageRect.left, fy=fr.top+fr.height/2-stageRect.top;
+        var tx=tr.left+tr.width/2-stageRect.left, ty=tr.top+tr.height/2-stageRect.top;
+        var pw, ph;
+        requestAnimationFrame(function(){
+          pw = packet.offsetWidth; ph = packet.offsetHeight;
+          var d = reduced ? 1 : (dur||1600);
+          var anim = packet.animate([
+            { transform:'translate('+(fx-pw/2)+'px,'+(fy-ph/2-44)+'px)', opacity:0 },
+            { transform:'translate('+(fx-pw/2)+'px,'+(fy-ph/2-44)+'px)', opacity:1, offset:0.15 },
+            { transform:'translate('+(tx-pw/2)+'px,'+(ty-ph/2-44)+'px)', opacity:1, offset:0.88 },
+            { transform:'translate('+(tx-pw/2)+'px,'+(ty-ph/2-44)+'px)', opacity:0 }
+          ], { duration:d, easing:'cubic-bezier(.4,0,.2,1)' });
+          anim.onfinish = function(){ packet.remove(); resolve(); };
+        });
+      });
+    }
+
+    btn.addEventListener('click', function(){
+      if(busy) return;
+      var u = userInput.value.trim(), p = passInput.value.trim();
+      clearBanner();
+      if(!u || !p){
+        form.classList.add('shake');
+        setTimeout(function(){ form.classList.remove('shake'); }, 420);
+        banner.className = 'result-banner err show';
+        banner.innerHTML = errIcon() + '<span>נא למלא שם משתמש וסיסמה לפני שליחת הבקשה.</span>';
+        return;
+      }
+      busy = true; btn.disabled = true;
+      (async function(){
+        var ts = new Date().toLocaleTimeString('he-IL');
+        log('<span class="muted">['+ts+']</span> שולחים בקשה: "אפשר להתחבר?"');
+        await wait(500);
+        log('<span class="muted">שם משתמש: '+u+'  ·  סיסמה: ••••••</span>');
+        await fly(client, site, 'שולחים', 'req', 1300);
+        await wait(400);
+        await fly(site, server, 'בקשת התחברות', 'req', 1600);
+        server.classList.add('pulse');
+        await wait(300);
+        log('<span class="muted">השרת בודק אם הפרטים נכונים…</span>');
+        await wait(1400);
+        server.classList.remove('pulse');
+        var success = (p === 'pass123');
+        var label = success ? '✓ מתאים' : '✗ לא מתאים';
+        var cls = success ? 'ok' : 'req';
+        await fly(server, site, label, cls, 1500);
+        await wait(300);
+        await fly(site, client, label, cls, 1300);
+        if(success){
+          log('<span class="ok">✓ הפרטים נכונים</span> <span class="muted">— מתחברים!</span>');
+          banner.className = 'result-banner ok show';
+          banner.innerHTML = okIcon() + '<span>ברוך הבא, '+u+'! התחברת בהצלחה.</span>';
+        } else {
+          log('<span class="muted">✗ הפרטים לא תואמים למה שיש לשרת שמור.</span>');
+          banner.className = 'result-banner err show';
+          banner.innerHTML = errIcon() + '<span>שם משתמש או סיסמה שגויים. נסו שוב.</span>';
+          form.classList.add('shake');
+          setTimeout(function(){ form.classList.remove('shake'); }, 420);
+        }
+        busy = false; btn.disabled = false;
+      })();
+    });
+  })();
+})();
+</script>
+
+</body>
+</html>
